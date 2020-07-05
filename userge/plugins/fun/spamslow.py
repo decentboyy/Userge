@@ -31,7 +31,7 @@ async def spam(message: Message):
             await message.edit(f"Spamming {sc} Time")
             for _ in range(sc):
                 await userge.send_sticker(sticker=to_spam, chat_id=message.chat.id)
-                await asyncio.sleep(10)
+                await asyncio.sleep(60)
             await S_LOG.log(f"Spammed Sticker in Chat» {message.chat.title}, {sc} times")
         elif (replied.animation or replied.video or replied.photo):
             dls = await userge.download_media(
@@ -49,11 +49,11 @@ async def spam(message: Message):
             if (replied.video or replied.animation):
                 for _ in range(sc):
                     await userge.send_video(video=to_spam, chat_id=message.chat.id)
-                    await asyncio.sleep(10)
+                    await asyncio.sleep(60)
             elif replied.photo:
                 for _ in range(sc):
                     await userge.send_photo(photo=to_spam, chat_id=message.chat.id)
-                    await asyncio.sleep(10)
+                    await asyncio.sleep(60)
             await S_LOG.log(f"Spammed Media in Chat» {message.chat.title}, {sc} times")
     elif is_str:
         spam_count, spam_text = message.input_str.split("|")
@@ -66,7 +66,7 @@ async def spam(message: Message):
         await message.edit(f"Spamming {sc} times")
         for _ in range(sc):
             await userge.send_message(text=spam_text, chat_id=message.chat.id)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(60)
         await S_LOG.log(f"Spammed Text in Chat» {message.chat.title}, {sc} times")
     else:
         await message.edit("Well it doesn't work that way")

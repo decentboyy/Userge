@@ -316,13 +316,13 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
         results = [
             InlineQueryResultArticle(
                 id=uuid4(),
-                title="Repo",
+                title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**Here's how to setup Userge** 😎"
+                    "USERGE is Up and Running\n\n       Durable as a Serge\n• python version : 3.8.3\n• pyrogram version : 0.17.1-async\n• userge version : 0.1.6-beta.30\n• license : GNU General Public License v3.0 (https://github.com/UsergeTeam/Userge/blob/master/LICENSE)\n• copyright : Copyright (C) 2020 by UsergeTeam@Github (https://github.com/UsergeTeam)"
                 ),
                 url="https://github.com/UsergeTeam/Userge",
                 description="Setup Your Own",
-                thumb_url="https://imgur.com/download/Inyeb1S",
+                thumb_url="https://0x0.st/iyYE.jpg",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -330,9 +330,8 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                                 "🧰 Userge Repo",
                                 url="https://github.com/UsergeTeam/Userge"),
                             InlineKeyboardButton(
-                                "🖥 Deploy Userge",
-                                url=("https://heroku.com/deploy?template="
-                                     "https://github.com/UsergeTeam/Userge/tree/master"))
+                                "🖥 My Fork",
+                                url=("https://github.com/ravana69/Userge"))
                         ]
                     ]
                 )

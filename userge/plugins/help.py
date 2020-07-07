@@ -318,7 +318,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 id=uuid4(),
                 title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "USERGE is Up and Running\n\n       Durable as a Serge\n• python version : 3.8.3\n• pyrogram version : 0.17.1-async\n• userge version : 0.1.6-beta.30\n• license : GNU General Public License v3.0 (https://github.com/UsergeTeam/Userge/blob/master/LICENSE)\n• copyright : Copyright (C) 2020 by UsergeTeam@Github (https://github.com/UsergeTeam)"
+                    "(USERGE)[https://github.com/ravana69/Userge] is Up and Running\n\n       Durable as a Serge\n• **python version :** 3.8.3\n• **pyrogram version :** 0.17.1-async\n• **userge version :** 0.1.6-beta.30\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
                 ),
                 url="https://github.com/UsergeTeam/Userge",
                 description="Setup Your Own",

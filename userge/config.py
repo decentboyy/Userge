@@ -167,5 +167,5 @@ def get_version() -> str:
     if diff:
         if "/usergeteam/userge" in Config.UPSTREAM_REPO.lower():
             return f"{ver}-beta.{len(diff)}"
-        return f"{ver}-custom.{len(diff)}"
+        return f"{ver}-PRO.{len(diff)}"
     return ver

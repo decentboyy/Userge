@@ -18,7 +18,7 @@ from pyrogram import (
     Filters, CallbackQuery, InlineQuery)
 from pyrogram.errors.exceptions.bad_request_400 import MessageNotModified, MessageIdInvalid
 
-from userge import userge, Message, Config
+from userge import userge, Message, Config, get_collection
 
 _CATEGORY = {
     'admin': '👨‍✈️',
@@ -30,13 +30,20 @@ _CATEGORY = {
     'temp': '♻️',
     'plugins': '💎'
 }
+SAVED_SETTINGS = get_collection("CONFIGS")
+
+
+async def _init() -> None:
+    data = await SAVED_SETTINGS.find_one({'_id': 'CURRENT_CLIENT'})
+    if data:
+        Config.USE_USER_FOR_CLIENT_CHECKS = bool(data['is_user'])
 
 
 @userge.on_cmd("help", about={'header': "Guide to use USERGE commands"}, allow_channels=False)
 async def helpme(message: Message) -> None:  # pylint: disable=missing-function-docstring
     plugins = userge.manager.enabled_plugins
     if not message.input_str:
-        out_str = f"""⚒ <b><u>(<code>{len(plugins)}</code>) Plugins Available</u></b>\n\n"""
+        out_str = f"""⚒ <b><u>(<code>{len(plugins)}</code>) Plugin(s) Available</u></b>\n\n"""
         cat_plugins = userge.manager.get_all_plugins()
         for cat in sorted(cat_plugins):
             out_str += (f"    {_CATEGORY.get(cat, '📁')} <b>{cat}</b> "
@@ -50,7 +57,7 @@ async def helpme(message: Message) -> None:  # pylint: disable=missing-function-
                 and (len(plugins[key].enabled_commands) > 1
                      or plugins[key].enabled_commands[0].name.lstrip(Config.CMD_TRIGGER) != key)):
             commands = plugins[key].enabled_commands
-            out_str = f"""⚔ <b><u>(<code>{len(commands)}</code>) Commands Available</u></b>
+            out_str = f"""⚔ <b><u>(<code>{len(commands)}</code>) Command(s) Available</u></b>
 
 🔧 <b>Plugin:</b>  <code>{key}</code>
 📘 <b>About:</b>  <code>{plugins[key].about}</code>\n\n"""
@@ -172,6 +179,19 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
         await callback_query.edit_message_text(
             "🖥 **Userge Main Menu** 🖥", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
 
+    @ubot.on_callback_query(filters=Filters.regex(pattern=r"^chgclnt$"))
+    @check_owner
+    async def callback_chgclnt(callback_query: CallbackQuery):
+        if Config.USE_USER_FOR_CLIENT_CHECKS:
+            Config.USE_USER_FOR_CLIENT_CHECKS = False
+        else:
+            Config.USE_USER_FOR_CLIENT_CHECKS = True
+        await SAVED_SETTINGS.update_one({'_id': 'CURRENT_CLIENT'},
+                                        {"$set": {'is_user': Config.USE_USER_FOR_CLIENT_CHECKS}},
+                                        upsert=True)
+        await callback_query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
+
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"refresh\((.+)\)"))
     @check_owner
     async def callback_exit(callback_query: CallbackQuery):
@@ -226,6 +246,10 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     "🖥 Main Menu", callback_data="mm".encode()))
                 tmp_btns.append(InlineKeyboardButton(
                     "🔄 Refresh", callback_data=f"refresh({cur_pos})".encode()))
+        else:
+            cur_clnt = "👲 USER" if Config.USE_USER_FOR_CLIENT_CHECKS else "🤖 BOT"
+            tmp_btns.append(InlineKeyboardButton(
+                f"🔩 Client for Checks and Sudos : {cur_clnt}", callback_data="chgclnt".encode()))
         return [tmp_btns]
 
     def category_data(cur_pos: str):
@@ -246,6 +270,8 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
 🎭 **Category** : `{pos_list[1]}`
 🔖 **Name** : `{plg.name}`
 📝 **About** : `{plg.about}`
+⚔ **Commands** : `{len(plg.commands)}`
+⚖ **Filters** : `{len(plg.filters)}`
 ✅ **Loaded** : `{plg.is_loaded}`
 ➕ **Enabled** : `{plg.is_enabled}`
 """

@@ -131,6 +131,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             return
         if len(pos_list) == 2:
             text = "🖥 **Userge Main Menu** 🖥"
+            image = "Userge/resources/userge.png"
             buttons = main_menu_buttons()
         elif len(pos_list) == 3:
             text, buttons = category_data(cur_pos)

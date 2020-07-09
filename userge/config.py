@@ -165,7 +165,7 @@ def get_version() -> str:
     ver = f"{versions.__major__}.{versions.__minor__}.{versions.__micro__}"
     diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
     if diff:
-        if "/usergeteam/userge" in Config.UPSTREAM_REPO.lower():
+        if "/ravana69/userge" in Config.UPSTREAM_REPO.lower():
             return f"{ver}-beta.{len(diff)}"
         return f"{ver}-PRO.{len(diff)}"
     return ver

@@ -154,7 +154,7 @@ for binary, path in _BINS.items():
 
 if Config.LOAD_UNOFFICIAL_PLUGINS:
     _LOG.info("Loading UnOfficial Plugins...")
-    _CMDS = ["git clone --depth=1 https://github.com/UsergeTeam/Userge-Plugins.git",
+    _CMDS = ["git clone --depth=1 https://github.com/ravana69/Userge-Plugins.git",
              "pip3 install -U pip",
              "pip3 install -r Userge-Plugins/requirements.txt",
              "rm -rf userge/plugins/unofficial/",
@@ -171,6 +171,6 @@ def get_version() -> str:
     diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
     if diff:
         if "/usergeteam/userge" in Config.UPSTREAM_REPO.lower():
-            return f"{ver}-beta.{len(diff)}"
-        return f"{ver}-custom.{len(diff)}"
+            return f"{ver}-Ultra-Pro.{len(diff)}"
+        return f"{ver}-PRO.{len(diff)}"
     return ver

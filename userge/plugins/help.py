@@ -243,7 +243,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 "⬅ Back", callback_data=f"back({cur_pos})".encode()))
             if len(cur_pos.split('|')) > 2:
                 tmp_btns.append(InlineKeyboardButton(
-                    "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**", callback_data="mm".encode()))
+                    "🖥 Main Menu", callback_data="mm".encode()))
                 tmp_btns.append(InlineKeyboardButton(
                     "🔄 Refresh", callback_data=f"refresh({cur_pos})".encode()))
         else:

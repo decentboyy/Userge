@@ -71,8 +71,8 @@ async def kang_(message: Message):
                 pack = int(args[0])
             else:
                 emoji = args[0]
-        packname = f"{user.id}_by_{user.id}_{pack}"
-        packnick = f"{user.id}'s kang pack Vol.{pack}"
+        packname = f"{user.id}_{pack}"
+        packnick = f"a{user.id}'s kang pack Vol.{pack}"
         cmd = '/newpack'
         if resize:
             photo = resize_photo(photo)
@@ -101,7 +101,7 @@ async def kang_(message: Message):
                 limit = "50" if is_anim else "120"
                 while limit in msg.text:
                     pack += 1
-                    packname = f"{user.id}_by_{user.username}_{pack}"
+                    packname = f"{user.id}_{pack}"
                     packnick = f"{user.id}'s kang pack Vol.{pack}"
                     await message.edit("`Switching to Pack " + str(pack) +
                                        " due to insufficient space`")

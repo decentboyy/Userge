@@ -177,7 +177,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
     @check_owner
     async def callback_mm(callback_query: CallbackQuery):
         await callback_query.edit_message_text(
-            "🖥 **Userge Main Menu** 🖥", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
+            "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
 
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"^chgclnt$"))
     @check_owner
@@ -243,7 +243,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 "⬅ Back", callback_data=f"back({cur_pos})".encode()))
             if len(cur_pos.split('|')) > 2:
                 tmp_btns.append(InlineKeyboardButton(
-                    "🖥 Main Menu", callback_data="mm".encode()))
+                    "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**", callback_data="mm".encode()))
                 tmp_btns.append(InlineKeyboardButton(
                     "🔄 Refresh", callback_data=f"refresh({cur_pos})".encode()))
         else:

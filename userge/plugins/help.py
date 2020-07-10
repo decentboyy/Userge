@@ -130,8 +130,12 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             await callback_query.answer("you are in main menu", show_alert=True)
             return
         if len(pos_list) == 2:
-            text = "🖥 **Userge Main Menu** 🖥"
-            image = "Userge/resources/userge.png"
+            text = "🖥 **▄▄▀█▄───▄───────▄
+▀▀▀██──███─────███
+░▄██▀░█████░░░█████░░
+███▀▄███░███░███░███░▄
+▀█████▀░░░▀███▀░░░▀██▀
+** 🖥"
             buttons = main_menu_buttons()
         elif len(pos_list) == 3:
             text, buttons = category_data(cur_pos)

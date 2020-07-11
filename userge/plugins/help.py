@@ -96,7 +96,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             else:
                 user_dict = await ubot.get_user_dict(Config.OWNER_ID)
                 await c_q.answer(
-                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @TheUserge 🤘",
+                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @ripUserge 🤘",
                     show_alert=True)
         return wrapper
 

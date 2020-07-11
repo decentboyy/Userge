@@ -343,7 +343,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 id=uuid4(),
                 title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda_\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.3`\n• **pyrogram version :** `0.17.1-async`\n• **userge version :** `0.1.6-Ultra-Pro`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
+                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.3`\n• **pyrogram version :** `0.17.1-async`\n• **userge version :** `0.1.6-Ultra-Pro`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
                 ),
                 url="https://github.com/UsergeTeam/Userge",
                 description="Setup Your Own",
@@ -368,11 +368,11 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     id=uuid4(),
                     title="Main Menu",
                     input_message_content=InputTextMessageContent(
-                        "🖥 **Userge Main Menu** 🖥"
+                        "**🖥 Userge Main Menu 🖥**\n\n▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀\n\n============================="
                     ),
-                    url="https://github.com/UsergeTeam/Userge",
+                    url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://imgur.com/download/Inyeb1S",
+                    thumb_url="https://github.com/ravana69/Userge/blob/alpha/resources/userge.png",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )

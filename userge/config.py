@@ -168,14 +168,14 @@ if Config.LOAD_UNOFFICIAL_PLUGINS:
 def get_version() -> str:
     """ get userge version """
     ver = f"{versions.__major__}.{versions.__minor__}.{versions.__micro__}"
-    if "/ravana69/userge" in Config.UPSTREAM_REPO.lower():
+    if "/usergeteam/userge" in Config.UPSTREAM_REPO.lower():
         stable = (getattr(versions, '__stable__', None)
                   or f"{versions.__major__}.{versions.__minor__}.{versions.__micro__ - 1}")
         diff = list(_REPO.iter_commits(f'v{stable}..HEAD'))
         if diff:
             return f"{ver}-staging.{len(diff)}"
     else:
-        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/alpha..HEAD'))
+        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
         if diff:
             return f"{ver}-CUSTOM_ULTRA_PRO.{len(diff)}"
     return ver

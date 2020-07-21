@@ -22,12 +22,13 @@ async def alive(message: Message):
     output = f"""
 **USERGE is Up and Running**
 
-       __Durable as a Lawda__
+       __Durable as a Serge__
 
 • **uptime** : `{userge.uptime}`
 • **python version** : `{versions.__python_version__}`
 • **pyrogram version** : `{versions.__pyro_version__}`
 • **userge version** : `{get_version()}`
+• **unofficial enabled** : `{Config.LOAD_UNOFFICIAL_PLUGINS}`
 • **license** : {versions.__license__}
 • **copyright** : {versions.__copyright__}
 • **repo** : [Userge]({Config.UPSTREAM_REPO})
@@ -37,7 +38,7 @@ async def alive(message: Message):
 
 async def refresh_id():
     global LOGO_STICKER_ID, LOGO_STICKER_REF  # pylint: disable=global-statement
-    sticker = (await userge.get_messages('ripuserge', 6)).sticker
+    sticker = (await userge.get_messages('theUserge', 8)).sticker
     LOGO_STICKER_ID = sticker.file_id
     LOGO_STICKER_REF = sticker.file_ref
 

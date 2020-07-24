@@ -22,7 +22,7 @@ LOG = userge.getLogger(__name__)
         '-t': "clean temp loaded plugins",
         '-d': "clean working folder"},
     'usage': "{tr}restart [flag | flags]",
-    'examples': "{tr}restart -t -d"}, del_pre=True, allow_channels=False)
+    'examples': "{tr}restart -t -d"}, del_pre=True, allow_channels=True)
 async def restart_cmd_handler(message: Message):
     await message.edit("Restarting Userge Services", log=__name__)
     LOG.info("USERGE Services - Restart initiated")

@@ -15,7 +15,7 @@ heroku3
 motor
 nest_asyncio
 oauth2client
-Pillow>=7.1.0
+Pillow==6.2.2
 psutil
 pybase64
 pySmartDL

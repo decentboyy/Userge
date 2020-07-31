@@ -343,20 +343,20 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 id=uuid4(),
                 title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.4`\n• **pyrogram version :** `0.17.1-async`\n• **userge version :** `0.1.6-Ultra-Pro`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
+                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.5`\n• **pyrogram version :** `0.18.0-async`\n• **userge version :** `0.1.7-custom`\n• **unofficial enabled :** `True`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
                 ),
-                url="https://github.com/UsergeTeam/Userge",
-                description="Setup Your Own",
-                thumb_url="https://0x0.st/iyYE.jpg",
+                url="https://github.com/ravana69/Userge",
+                description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
+                thumb_url="https://0x0.st/ixJc.jpg",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "🧰 Userge Repo",
-                                url="https://github.com/UsergeTeam/Userge"),
+                                "🍆Pornage Repo🤷‍♀️",
+                                url="https://github.com/ravana69/Userge"),
                             InlineKeyboardButton(
-                                "🖥 My Fork",
-                                url=("https://github.com/ravana69/Userge"))
+                                "💎Unofficial Plugins💎",
+                                url=("https://github.com/ravana69/Userge-Plugins"))
                         ]
                     ]
                 )
@@ -372,7 +372,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     ),
                     url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://github.com/ravana69/Userge/blob/alpha/resources/userge.png",
+                    thumb_url="https://0x0.st/ixJq.jpg",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )

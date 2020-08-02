@@ -39,7 +39,7 @@ async def _init() -> None:
         Config.USE_USER_FOR_CLIENT_CHECKS = bool(data['is_user'])
 
 
-@userge.on_cmd("help", about={'header': "Guide to use USERGE commands"}, allow_channels=False)
+@userge.on_cmd("help", about={'header': "Guide to use USERGE commands"}, allow_channels=True)
 async def helpme(message: Message) -> None:  # pylint: disable=missing-function-docstring
     plugins = userge.manager.enabled_plugins
     if not message.input_str:

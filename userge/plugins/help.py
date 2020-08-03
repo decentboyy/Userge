@@ -347,7 +347,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 ),
                 url="https://github.com/ravana69/Userge",
                 description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
-                thumb_url="https://0x0.st/ixJc.jpg",
+                thumb_url="https://0x0.st/ixJN.mp4",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -372,7 +372,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     ),
                     url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://0x0.st/ixJq.jpg",
+                    thumb_url="https://0x0.st/iLYd.mp4",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )

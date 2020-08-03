@@ -141,10 +141,7 @@ async def set_custom_nopm_message(message: Message):
     """ setup custom pm message """
     global noPmMessage  # pylint: disable=global-statement
     await message.edit('`Custom NOpm message saved`', del_in=3, log=__name__)
-    if message.reply_to_message:
-        string = message.reply_to_message.text
-    else:
-        string = message.input_str
+    string = message.input_or_reply_raw
     if string:
         noPmMessage = string
         await SAVED_SETTINGS.update_one(
@@ -166,10 +163,7 @@ async def set_custom_blockpm_message(message: Message):
     """ setup custom blockpm message """
     global blocked_message  # pylint: disable=global-statement
     await message.edit('`Custom BLOCKpm message saved`', del_in=3, log=__name__)
-    if message.reply_to_message:
-        string = message.reply_to_message.text
-    else:
-        string = message.input_str
+    string = message.input_or_reply_raw
     if string:
         blocked_message = string
         await SAVED_SETTINGS.update_one(
@@ -218,7 +212,7 @@ async def uninvitedPmHandler(message: Message):
     else:
         pmCounter.update({message.from_user.id: 1})
         await message.reply(
-            noPmMessage.format_map(SafeDict(**user_dict)) + '\n`- Send Me Your Dick Pic First Before Continuing`')
+            noPmMessage.format_map(SafeDict(**user_dict)) + '\n`- Protected by @rendikhana`')
         await asyncio.sleep(1)
         await CHANNEL.log(f"#NEW_MESSAGE\n{user_dict['mention']} has messaged you")
 

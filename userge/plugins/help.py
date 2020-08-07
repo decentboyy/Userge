@@ -39,7 +39,7 @@ async def _init() -> None:
         Config.USE_USER_FOR_CLIENT_CHECKS = bool(data['is_user'])
 
 
-@userge.on_cmd("help", about={'header': "Guide to use USERGE commands"}, allow_channels=True)
+@userge.on_cmd("help", about={'header': "Guide to use USERGE commands"}, allow_channels=False)
 async def helpme(message: Message) -> None:  # pylint: disable=missing-function-docstring
     plugins = userge.manager.enabled_plugins
     if not message.input_str:
@@ -60,7 +60,7 @@ async def helpme(message: Message) -> None:  # pylint: disable=missing-function-
             out_str = f"""⚔ <b><u>(<code>{len(commands)}</code>) Command(s) Available</u></b>
 
 🔧 <b>Plugin:</b>  <code>{key}</code>
-📘 <b>About:</b>  <code>{plugins[key].about}</code>\n\n"""
+📘 <b>Doc:</b>  <code>{plugins[key].doc}</code>\n\n"""
             for i, cmd in enumerate(commands, start=1):
                 out_str += (f"    🤖 <b>cmd(<code>{i}</code>):</b>  <code>{cmd.name}</code>\n"
                             f"    📚 <b>info:</b>  <i>{cmd.doc}</i>\n\n")
@@ -96,7 +96,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             else:
                 user_dict = await ubot.get_user_dict(Config.OWNER_ID)
                 await c_q.answer(
-                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @ripUserge 🤘",
+                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @ripuserge 🤘",
                     show_alert=True)
         return wrapper
 
@@ -269,7 +269,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
 
 🎭 **Category** : `{pos_list[1]}`
 🔖 **Name** : `{plg.name}`
-📝 **About** : `{plg.about}`
+📝 **Doc** : `{plg.doc}`
 ⚔ **Commands** : `{len(plg.commands)}`
 ⚖ **Filters** : `{len(plg.filters)}`
 ✅ **Loaded** : `{plg.is_loaded}`
@@ -299,25 +299,20 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
         plg = userge.manager.plugins[pos_list[2]]
         flts = {flt.name: flt for flt in plg.commands + plg.filters}
         flt = flts[pos_list[-1]]
-        if hasattr(flt, 'doc'):
-            text = f"""⚔ **--Command Status--** ⚔
-
+        flt_data = f"""
 🔖 **Name** : `{flt.name}`
 📝 **Doc** : `{flt.doc}`
 🤖 **Via Bot** : `{flt.allow_via_bot}`
 ✅ **Loaded** : `{flt.is_loaded}`
-➕ **Enabled** : `{flt.is_enabled}`
-
+➕ **Enabled** : `{flt.is_enabled}`"""
+        if hasattr(flt, 'about'):
+            text = f"""⚔ **--Command Status--**
+{flt_data}
 {flt.about}
 """
         else:
             text = f"""⚖ **--Filter Status--** ⚖
-
-🔖 **Name** : `{flt.name}`
-📝 **About** : `{flt.about}`
-🤖 **Via Bot** : `{flt.allow_via_bot}`
-✅ **Loaded** : `{flt.is_loaded}`
-➕ **Enabled** : `{flt.is_enabled}`
+{flt_data}
 """
         buttons = default_buttons(cur_pos)
         tmp_btns = []
@@ -347,7 +342,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 ),
                 url="https://github.com/ravana69/Userge",
                 description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
-                thumb_url="https://0x0.st/ixJN.mp4",
+                thumb_url="https://0x0.st/ixJN.jpg",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -372,7 +367,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     ),
                     url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://0x0.st/iLYd.mp4",
+                    thumb_url="https://0x0.st/iLYd.jpg",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )

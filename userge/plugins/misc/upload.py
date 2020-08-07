@@ -1,5 +1,5 @@
-# pylint: disable=missing-module-docstring
-#
+""" upload , rename and convert telegram files """
+
 # Copyright (C) 2020 by UsergeTeam@Github, < https://github.com/UsergeTeam >.
 #
 # This file is part of < https://github.com/UsergeTeam/Userge > project,
@@ -8,300 +8,372 @@
 #
 # All rights reserved.
 
-__all__ = ['RawDecorator']
-
 import os
+import io
+import re
+import math
 import time
 import asyncio
-from traceback import format_exc
-from functools import partial
-from typing import List, Dict, Union, Any, Callable, Optional
+import stagger
+from datetime import datetime
+from pathlib import Path
+from urllib.parse import unquote_plus
 
-from pyrogram import (
-    Message as RawMessage, Filters,
-    StopPropagation, ContinuePropagation)
-from pyrogram.client.types import ChatMember
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, PeerIdInvalid
+from PIL import Image
+from pySmartDL import SmartDL
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
+from pyrogram.errors.exceptions import FloodWait
 
-from userge import logging, Config
-from ...ext import RawClient
-from ... import types, client as _client  # pylint: disable=unused-import
+from userge import userge, Config, Message
+from userge.utils import progress, take_screen_shot, humanbytes
 
-_LOG = logging.getLogger(__name__)
-_LOG_STR = "<<<!  :::::  %s  :::::  !>>>"
+LOGGER = userge.getLogger(__name__)
+CHANNEL = userge.getCLogger(__name__)
 
-_PYROFUNC = Callable[['types.bound.Message'], Any]
-_TASK_1_START_TO = time.time()
-_TASK_2_START_TO = time.time()
-
-_B_ID = 0
-_B_CMN_CHT: List[int] = []
-_B_AD_CHT: Dict[int, ChatMember] = {}
-_B_NM_CHT: Dict[int, ChatMember] = {}
-
-_U_ID = 0
-_U_AD_CHT: Dict[int, ChatMember] = {}
-_U_NM_CHT: Dict[int, ChatMember] = {}
+LOGO_PATH = 'resources/userge.png'
+THUMB_PATH = Config.DOWN_PATH + "thumb_image.jpg"
 
 
-async def _update_u_cht(r_m: RawMessage) -> ChatMember:
-    if r_m.chat.id not in {**_U_AD_CHT, **_U_NM_CHT}:
-        user = await r_m.chat.get_member(_U_ID)
-        user.can_all = None
-        if user.status == "creator":
-            user.can_all = True
-        if user.status in ("creator", "administrator"):
-            _U_AD_CHT[r_m.chat.id] = user
-        else:
-            _U_NM_CHT[r_m.chat.id] = user
-    elif r_m.chat.id in _U_AD_CHT:
-        user = _U_AD_CHT[r_m.chat.id]
-    else:
-        user = _U_NM_CHT[r_m.chat.id]
-    return user
-
-
-async def _update_b_cht(r_m: RawMessage) -> ChatMember:
-    if r_m.chat.id not in {**_B_AD_CHT, **_B_NM_CHT}:
-        bot = await r_m.chat.get_member(_B_ID)
-        if bot.status == "administrator":
-            _B_AD_CHT[r_m.chat.id] = bot
-        else:
-            _B_NM_CHT[r_m.chat.id] = bot
-    elif r_m.chat.id in _B_AD_CHT:
-        bot = _B_AD_CHT[r_m.chat.id]
-    else:
-        bot = _B_NM_CHT[r_m.chat.id]
-    return bot
-
-
-def _clear_cht() -> None:
-    global _TASK_1_START_TO  # pylint: disable=global-statement
-    _U_AD_CHT.clear()
-    _U_NM_CHT.clear()
-    _B_AD_CHT.clear()
-    _B_NM_CHT.clear()
-    _TASK_1_START_TO = time.time()
-
-
-async def _init(r_c: Union['_client.Userge', '_client._UsergeBot']) -> None:
-    global _U_ID, _B_ID  # pylint: disable=global-statement
-    if _U_ID and _B_ID:
+@userge.on_cmd("rename", about={
+    'header': "Rename telegram files",
+    'flags': {'-d': "upload as document"},
+    'usage': "{tr}rename [flags] [new_name_with_extention] : reply to telegram media",
+    'examples': "{tr}rename -d test.mp4"}, del_pre=True, check_downpath=True)
+async def rename_(message: Message):
+    """ rename telegram files """
+    if not message.filtered_input_str:
+        await message.err("new name not found!")
         return
-    if isinstance(r_c, _client.Userge):
-        if not _U_ID:
-            _U_ID = (await r_c.get_me()).id
-        if RawClient.DUAL_MODE and not _B_ID:
-            _B_ID = (await r_c.bot.get_me()).id
+    await message.edit("`Trying to Rename ...`")
+    if message.reply_to_message and message.reply_to_message.media:
+        dl_loc = await message.client.download_media(
+            message=message.reply_to_message,
+            file_name=Config.DOWN_PATH,
+            progress=progress,
+            progress_args=(message, "trying to download")
+        )
+        if message.process_is_canceled:
+            await message.edit("`Process Canceled!`", del_in=5)
+        else:
+            await message.delete()
+            dl_loc = os.path.join(Config.DOWN_PATH, os.path.basename(dl_loc))
+            new_loc = os.path.join(Config.DOWN_PATH, message.filtered_input_str)
+            os.rename(dl_loc, new_loc)
+            await upload(message, Path(new_loc), True)
     else:
-        if not _B_ID:
-            _B_ID = (await r_c.get_me()).id
-        if RawClient.DUAL_MODE and not _U_ID:
-            _U_ID = (await r_c.ubot.get_me()).id
+        await message.edit("Please read `.help rename`", del_in=5)
 
 
-async def _raise_func(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                      chat_id: int, message_id: int, text: str) -> None:
+@userge.on_cmd("convert", about={
+    'header': "Convert telegram files",
+    'usage': "reply {tr}convert to any media"}, del_pre=True, check_downpath=True)
+async def convert_(message: Message):
+    """ convert telegram files """
+    await message.edit("`Trying to Convert ...`")
+    if message.reply_to_message and message.reply_to_message.media:
+        dl_loc = await message.client.download_media(
+            message=message.reply_to_message,
+            file_name=Config.DOWN_PATH,
+            progress=progress,
+            progress_args=(message, "trying to download")
+        )
+        if message.process_is_canceled:
+            await message.edit("`Process Canceled!`", del_in=5)
+        else:
+            await message.delete()
+            dl_loc = os.path.join(Config.DOWN_PATH, os.path.basename(dl_loc))
+            message.text = '' if message.reply_to_message.document else ". -d"
+            await upload(message, Path(dl_loc), True)
+    else:
+        await message.edit("Please read `.help convert`", del_in=5)
+
+
+@userge.on_cmd("upload", about={
+    'header': "Upload files to telegram",
+    'flags': {'-d': "upload as document"},
+    'usage': "{tr}upload [flags] [file or folder path | link]",
+    'examples': [
+        "{tr}upload -d https://speed.hetzner.de/100MB.bin | test.bin",
+        "{tr}upload downloads/test.mp4"]}, del_pre=True, check_downpath=True)
+async def uploadtotg(message: Message):
+    """ upload to telegram """
+    path_ = message.filtered_input_str
+    if not path_:
+        await message.edit("invalid input!, check `.help .upload`", del_in=5)
+        return
+    is_url = re.search(r"(?:https?|ftp)://[^|\s]+\.[^|\s]+", path_)
+    del_path = False
+    if is_url:
+        del_path = True
+        await message.edit("`Downloading From URL...`")
+        url = is_url[0]
+        file_name = unquote_plus(os.path.basename(url))
+        if "|" in path_:
+            file_name = path_.split("|")[1].strip()
+        path_ = os.path.join(Config.DOWN_PATH, file_name)
+        try:
+            downloader = SmartDL(url, path_, progress_bar=False)
+            downloader.start(blocking=False)
+            count = 0
+            while not downloader.isFinished():
+                if message.process_is_canceled:
+                    downloader.stop()
+                    raise Exception('Process Canceled!')
+                total_length = downloader.filesize if downloader.filesize else 0
+                downloaded = downloader.get_dl_size()
+                percentage = downloader.get_progress() * 100
+                speed = downloader.get_speed(human=True)
+                estimated_total_time = downloader.get_eta(human=True)
+                progress_str = \
+                    "__{}__\n" + \
+                    "```[{}{}]```\n" + \
+                    "**Progress** : `{}%`\n" + \
+                    "**URL** : `{}`\n" + \
+                    "**FILENAME** : `{}`\n" + \
+                    "**Completed** : `{}`\n" + \
+                    "**Total** : `{}`\n" + \
+                    "**Speed** : `{}`\n" + \
+                    "**ETA** : `{}`"
+                progress_str = progress_str.format(
+                    "trying to download",
+                    ''.join((Config.FINISHED_PROGRESS_STR
+                             for i in range(math.floor(percentage / 5)))),
+                    ''.join((Config.UNFINISHED_PROGRESS_STR
+                             for i in range(20 - math.floor(percentage / 5)))),
+                    round(percentage, 2),
+                    url,
+                    file_name,
+                    humanbytes(downloaded),
+                    humanbytes(total_length),
+                    speed,
+                    estimated_total_time)
+                count += 1
+                if count >= 5:
+                    count = 0
+                    await message.try_to_edit(progress_str, disable_web_page_preview=True)
+                await asyncio.sleep(1)
+        except Exception as d_e:
+            await message.err(d_e)
+            return
+    if "|" in path_:
+        path_, file_name = path_.split("|")
+        path_ = path_.strip()
+        if os.path.isfile(path_):
+            new_path = os.path.join(Config.DOWN_PATH, file_name.strip())
+            os.rename(path_, new_path)
+            path_ = new_path
     try:
-        _sent = await r_c.send_message(
-            chat_id=chat_id,
-            text=f"< **ERROR** : {text} ! >",
-            reply_to_message_id=message_id)
-        await asyncio.sleep(5)
-        await _sent.delete()
-    except ChatAdminRequired:
+        string = Path(path_)
+    except IndexError:
+        await message.edit("wrong syntax\n`.upload [path]`")
+    else:
+        await message.delete()
+        await upload_path(message, string, del_path)
+
+
+async def upload_path(message: Message, path: Path, del_path):
+    file_paths = []
+
+    def explorer(path: Path) -> None:
+        if path.is_file() and path.stat().st_size:
+            file_paths.append(path)
+        elif path.is_dir():
+            for i in sorted(path.iterdir()):
+                explorer(i)
+    explorer(path)
+    current = 0
+    for p_t in file_paths:
+        current += 1
+        try:
+            await upload(message, p_t, del_path, f"{current}/{len(file_paths)}")
+        except FloodWait as f_e:
+            time.sleep(f_e.x)  # asyncio sleep ?
+        if message.process_is_canceled:
+            break
+
+
+async def upload(message: Message, path: Path, del_path: bool = False, extra: str = ''):
+    if path.name.endswith((".mkv", ".mp4", ".webm")) and ('d' not in message.flags):
+        await vid_upload(message, path, del_path, extra)
+    elif path.name.endswith((".mp3", ".flac", ".wav", ".m4a")) and ('d' not in message.flags):
+        await audio_upload(message, path, del_path, extra)
+    elif path.name.endswith((".jpg", ".jpeg", ".png", ".bmp")) and ('d' not in message.flags):
+        await photo_upload(message, path, del_path, extra)
+    else:
+        await doc_upload(message, path, del_path, extra)
+
+
+async def doc_upload(message: Message, path, del_path: bool = False, extra: str = ''):
+    sent: Message = await message.client.send_message(
+        message.chat.id, f"`Uploading {path.name} as a doc ... {extra}`")
+    start_t = datetime.now()
+    thumb = await get_thumb()
+    await message.client.send_chat_action(message.chat.id, "upload_document")
+    try:
+        msg = await message.client.send_document(
+            chat_id=message.chat.id,
+            document=str(path),
+            thumb=thumb,
+            caption=path.name,
+            parse_mode="html",
+            disable_notification=True,
+            progress=progress,
+            progress_args=(message, f"uploading {extra}", str(path.name))
+        )
+    except Exception as u_e:
+        await sent.edit(u_e)
+        raise u_e
+    else:
+        await sent.delete()
+        await finalize(message, msg, start_t)
+    finally:
+        if os.path.exists(str(path)) and del_path:
+            os.remove(str(path))
+
+
+async def vid_upload(message: Message, path, del_path: bool = False, extra: str = ''):
+    strpath = str(path)
+    thumb = await get_thumb(strpath)
+    duration = 0
+    metadata = extractMetadata(createParser(strpath))
+    if metadata and metadata.has("duration"):
+        duration = metadata.get("duration").seconds
+    sent: Message = await message.client.send_message(
+        message.chat.id, f"`Uploading {path.name} as a video ... {extra}`")
+    start_t = datetime.now()
+    await message.client.send_chat_action(message.chat.id, "upload_video")
+    try:
+        msg = await message.client.send_video(
+            chat_id=message.chat.id,
+            video=strpath,
+            duration=duration,
+            thumb=thumb,
+            caption=path.name,
+            parse_mode="html",
+            disable_notification=True,
+            progress=progress,
+            progress_args=(message, f"uploading {extra}", str(path.name))
+        )
+    except Exception as u_e:
+        await sent.edit(u_e)
+        raise u_e
+    else:
+        await sent.delete()
+        await remove_thumb(thumb)
+        await finalize(message, msg, start_t)
+    finally:
+        if os.path.exists(str(path)) and del_path:
+            os.remove(str(path))
+
+
+async def audio_upload(message: Message, path, del_path: bool = False, extra: str = ''):
+    title = None
+    artist = None
+    thumb = None
+    duration = 0
+    strpath = str(path)
+    file_size = humanbytes(os.stat(strpath).st_size)
+    try:
+        album_art = stagger.read_tag(strpath)
+        if (album_art.picture and not os.path.lexists(THUMB_PATH)):
+            bytes_pic_data = album_art[stagger.id3.APIC][0].data
+            bytes_io = io.BytesIO(bytes_pic_data)
+            image_file = Image.open(bytes_io)
+            image_file.save("album_cover.jpg", "JPEG")
+            thumb = "album_cover.jpg"
+    except stagger.errors.NoTagError:
         pass
-
-
-async def _is_admin(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                    r_m: RawMessage) -> bool:
-    if r_m.chat.type in ("private", "bot"):
-        return False
-    if round(time.time() - _TASK_1_START_TO) > 10:
-        _clear_cht()
-    if isinstance(r_c, _client.Userge):
-        await _update_u_cht(r_m)
-        return r_m.chat.id in _U_AD_CHT
-    await _update_b_cht(r_m)
-    return r_m.chat.id in _B_AD_CHT
-
-
-async def _bot_is_present(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                          r_m: RawMessage) -> bool:
-    global _TASK_2_START_TO  # pylint: disable=global-statement
-    if isinstance(r_c, _client.Userge):
-        if round(time.time() - _TASK_2_START_TO) > 10:
-            try:
-                chats = await r_c.get_common_chats(_B_ID)
-                _B_CMN_CHT.clear()
-                for chat in chats:
-                    _B_CMN_CHT.append(chat.id)
-            except PeerIdInvalid:
-                pass
-            _TASK_2_START_TO = time.time()
-    else:
-        if r_m.chat.id not in _B_CMN_CHT:
-            _B_CMN_CHT.append(r_m.chat.id)
-    return r_m.chat.id in _B_CMN_CHT
-
-
-def _get_chat_member(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                     r_m: RawMessage) -> Optional[ChatMember]:
-    if r_m.chat.type in ("private", "bot"):
-        return None
-    if isinstance(r_c, _client.Userge):
-        if r_m.chat.id in _U_AD_CHT:
-            return _U_AD_CHT[r_m.chat.id]
-        return _U_NM_CHT[r_m.chat.id]
-    if r_m.chat.id in _B_AD_CHT:
-        return _B_AD_CHT[r_m.chat.id]
-    return _B_NM_CHT[r_m.chat.id]
-
-
-async def _both_are_admins(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                           r_m: RawMessage) -> bool:
-    if not await _bot_is_present(r_c, r_m):
-        return False
-    return r_m.chat.id in _B_AD_CHT and r_m.chat.id in _U_AD_CHT
-
-
-async def _both_have_perm(flt: Union['types.raw.Command', 'types.raw.Filter'],
-                          r_c: Union['_client.Userge', '_client._UsergeBot'],
-                          r_m: RawMessage) -> bool:
-    if not await _bot_is_present(r_c, r_m):
-        return False
+    metadata = extractMetadata(createParser(strpath))
+    if metadata and metadata.has("title"):
+        title = metadata.get("title")
+    if metadata and metadata.has("artist"):
+        artist = metadata.get("artist")
+    if metadata and metadata.has("duration"):
+        duration = metadata.get("duration").seconds
+    sent: Message = await message.client.send_message(
+        message.chat.id, f"`Uploading {path.name} as audio ... {extra}`")
+    start_t = datetime.now()
+    await message.client.send_chat_action(message.chat.id, "upload_audio")
     try:
-        user = await _update_u_cht(r_m)
-        bot = await _update_b_cht(r_m)
-    except PeerIdInvalid:
-        return False
-    if flt.check_change_info_perm and not (
-            (user.can_all or user.can_change_info) and bot.can_change_info):
-        return False
-    if flt.check_edit_perm and not (
-            (user.can_all or user.can_edit_messages) and bot.can_edit_messages):
-        return False
-    if flt.check_delete_perm and not (
-            (user.can_all or user.can_delete_messages) and bot.can_delete_messages):
-        return False
-    if flt.check_restrict_perm and not (
-            (user.can_all or user.can_restrict_members) and bot.can_restrict_members):
-        return False
-    if flt.check_promote_perm and not (
-            (user.can_all or user.can_promote_members) and bot.can_promote_members):
-        return False
-    if flt.check_invite_perm and not (
-            (user.can_all or user.can_invite_users) and bot.can_invite_users):
-        return False
-    if flt.check_pin_perm and not (
-            (user.can_all or user.can_pin_messages) and bot.can_pin_messages):
-        return False
-    return True
+        msg = await message.client.send_audio(
+            chat_id=message.chat.id,
+            audio=strpath,
+            thumb=thumb,
+            caption=f"{path.name} [ {file_size} ]",
+            title=title,
+            performer=artist,
+            duration=duration,
+            parse_mode="html",
+            disable_notification=True,
+            progress=progress,
+            progress_args=(message, f"uploading {extra}", str(path.name))
+        )
+    except Exception as u_e:
+        await sent.edit(u_e)
+        raise u_e
+    else:
+        await sent.delete()
+        await finalize(message, msg, start_t)
+    finally:
+        if os.path.lexists("album_cover.jpg"):
+            os.remove("album_cover.jpg")
+        if os.path.exists(str(path)) and del_path:
+            os.remove(str(path))
 
 
-class RawDecorator(RawClient):
-    """ userge raw decoretor """
-    _PYRORETTYPE = Callable[[_PYROFUNC], _PYROFUNC]
+async def photo_upload(message: Message, path, del_path: bool = False, extra: str = ''):
+    strpath = str(path)
+    sent: Message = await message.client.send_message(
+        message.chat.id, f"`Uploading {path.name} as photo ... {extra}`")
+    start_t = datetime.now()
+    await message.client.send_chat_action(message.chat.id, "upload_photo")
+    try:
+        msg = await message.client.send_photo(
+            chat_id=message.chat.id,
+            photo=strpath,
+            caption=path.name,
+            parse_mode="html",
+            disable_notification=True,
+            progress=progress,
+            progress_args=(message, f"uploading {extra}", str(path.name))
+        )
+    except Exception as u_e:
+        await sent.edit(u_e)
+        raise u_e
+    else:
+        await sent.delete()
+        await finalize(message, msg, start_t)
+    finally:
+        if os.path.exists(strpath) and del_path:
+            os.remove(strpath)
 
-    def __init__(self, **kwargs) -> None:
-        self.manager = types.new.Manager(self)
-        self._tasks: List[Callable[[Any], Any]] = []
-        super().__init__(**kwargs)
 
-    def on_filters(self, filters: Filters, group: int = 0,
-                   **kwargs: Union[bool]) -> 'RawDecorator._PYRORETTYPE':
-        """ abstract on filter method """
+async def get_thumb(path: str = ''):
+    if os.path.exists(THUMB_PATH):
+        return THUMB_PATH
+    if path:
+        metadata = extractMetadata(createParser(path))
+        if metadata and metadata.has("duration"):
+            return await take_screen_shot(
+                path, metadata.get("duration").seconds)
+    if os.path.exists(LOGO_PATH):
+        return LOGO_PATH
+    return None
 
-    def _build_decorator(self,
-                         flt: Union['types.raw.Command', 'types.raw.Filter'],
-                         **kwargs: Union[str, bool]) -> 'RawDecorator._PYRORETTYPE':
-        def decorator(func: _PYROFUNC) -> _PYROFUNC:
-            async def template(r_c: Union['_client.Userge', '_client._UsergeBot'],
-                               r_m: RawMessage) -> None:
-                await _init(r_c)
-                _raise = partial(_raise_func, r_c, r_m.chat.id, r_m.message_id)
-                if r_m.chat and r_m.chat.type not in flt.scope:
-                    if isinstance(flt, types.raw.Command):
-                        await _raise(f"`invalid chat type [{r_m.chat.type}]`")
-                    return
-                if r_m.chat and flt.only_admins and not await _is_admin(r_c, r_m):
-                    if isinstance(flt, types.raw.Command):
-                        await _raise("`chat admin required`")
-                    return
-                if r_m.chat and flt.check_perm:
-                    is_admin = await _is_admin(r_c, r_m)
-                    c_m = _get_chat_member(r_c, r_m)
-                    if not c_m:
-                        if isinstance(flt, types.raw.Command):
-                            await _raise(f"`invalid chat type [{r_m.chat.type}]`")
-                        return
-                    if c_m.status != "creator":
-                        if flt.check_change_info_perm and not c_m.can_change_info:
-                            if isinstance(flt, types.raw.Command):
-                                await _raise("`required permisson [change_info]`")
-                            return
-                        if flt.check_edit_perm and not c_m.can_edit_messages:
-                            if isinstance(flt, types.raw.Command):
-                                await _raise("`required permisson [edit_messages]`")
-                            return
-                        if flt.check_delete_perm and not c_m.can_delete_messages:
-                            if isinstance(flt, types.raw.Command):
-                                await _raise("`required permisson [delete_messages]`")
-                            return
-                        if flt.check_restrict_perm and not c_m.can_restrict_members:
-                            if isinstance(flt, types.raw.Command):
-                                if is_admin:
-                                    await _raise("`required permisson [restrict_members]`")
-                                else:
-                                    await _raise("`chat admin required`")
-                            return
-                        if flt.check_promote_perm and not c_m.can_promote_members:
-                            if isinstance(flt, types.raw.Command):
-                                if is_admin:
-                                    await _raise("`required permisson [promote_members]`")
-                                else:
-                                    await _raise("`chat admin required`")
-                            return
-                        if flt.check_invite_perm and not c_m.can_invite_users:
-                            if isinstance(flt, types.raw.Command):
-                                await _raise("`required permisson [invite_users]`")
-                            return
-                        if flt.check_pin_perm and not c_m.can_pin_messages:
-                            if isinstance(flt, types.raw.Command):
-                                await _raise("`required permisson [pin_messages]`")
-                            return
-                if RawClient.DUAL_MODE:
-                    if (flt.check_client
-                            or (r_m.from_user and r_m.from_user.id in Config.SUDO_USERS)):
-                        cond = True
-                        if flt.only_admins:
-                            cond = cond and await _both_are_admins(r_m, r_m)
-                        if flt.check_perm:
-                            cond = cond and await _both_have_perm(flt, r_c, r_m)
-                        if cond:
-                            if Config.USE_USER_FOR_CLIENT_CHECKS:
-                                # pylint: disable=protected-access
-                                if isinstance(r_c, _client._UsergeBot):
-                                    return
-                            elif await _bot_is_present(r_c, r_m):
-                                if isinstance(r_c, _client.Userge):
-                                    return
-                if flt.check_downpath and not os.path.isdir(Config.DOWN_PATH):
-                    os.makedirs(Config.DOWN_PATH)
-                try:
-                    await func(types.bound.Message(r_c, r_m, **kwargs))
-                except (StopPropagation, ContinuePropagation):  # pylint: disable=W0706
-                    raise
-                except Exception as f_e:  # pylint: disable=broad-except
-                    _LOG.exception(_LOG_STR, f_e)
-                    await self._channel.log(f"**PLUGIN** : `{func.__module__}`\n"
-                                            f"**FUNCTION** : `{func.__name__}`\n"
-                                            f"\n```{format_exc().strip()}```",
-                                            "TRACEBACK")
-                    await _raise(f"`{f_e}`\n__see logs for more info__")
-            flt.update(func, template)
-            self.manager.get_plugin(func.__module__).add(flt)
-            _LOG.debug(_LOG_STR, f"Imported => [ async def {func.__name__}(message) ] "
-                       f"from {func.__module__} {flt}")
-            return func
-        return decorator
+
+async def remove_thumb(thumb: str) -> None:
+    if (thumb and os.path.exists(thumb)
+            and thumb != LOGO_PATH and thumb != THUMB_PATH):
+        os.remove(thumb)
+
+
+async def finalize(message: Message, msg: Message, start_t):
+    await CHANNEL.fwd_msg(msg)
+    await message.client.send_chat_action(message.chat.id, "cancel")
+    if message.process_is_canceled:
+        await message.edit("`Process Canceled!`", del_in=5)
+    else:
+        end_t = datetime.now()
+        m_s = (end_t - start_t).seconds
+        await message.edit(f"Uploaded in {m_s} seconds", del_in=10)

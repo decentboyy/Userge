@@ -47,11 +47,10 @@ _checkDefaultVars() {
     replyLastMessage "Checking Default ENV Vars ..."
     declare -rA def_vals=(
         [WORKERS]=4
-        [ANTISPAM_SENTRY]=false
         [PREFERRED_LANGUAGE]="en"
         [DOWN_PATH]="downloads"
         [UPSTREAM_REMOTE]="upstream"
-        [UPSTREAM_REPO]="https://github.com/ravana69/Userge"
+        [UPSTREAM_REPO]="https://github.com/UsergeTeam/Userge"
         [LOAD_UNOFFICIAL_PLUGINS]=false
         [G_DRIVE_IS_TD]=true
         [CMD_TRIGGER]="."
@@ -67,7 +66,7 @@ _checkDefaultVars() {
     DOWN_PATH=${DOWN_PATH%/}/
     [[ -n $HEROKU_API_KEY && -n $HEROKU_APP_NAME ]] \
         && declare -gx HEROKU_GIT_URL="https://api:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git"
-    for var in ANTISPAM_SENTRY G_DRIVE_IS_TD LOAD_UNOFFICIAL_PLUGINS; do
+    for var in G_DRIVE_IS_TD LOAD_UNOFFICIAL_PLUGINS; do
         eval $var=$(tr "[:upper:]" "[:lower:]" <<< ${!var})
     done
     local nameAndUName=$(grep -oP "(?<=\/\/)(.+)(?=\@)" <<< $DATABASE_URL)

@@ -16,7 +16,7 @@ import time
 import asyncio
 import importlib
 from types import ModuleType
-rom typing import List, Awaitable, Any, Optional, Union
+from typing import List, Awaitable, Any, Optional, Union
 
 import psutil
 

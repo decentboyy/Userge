@@ -31,6 +31,7 @@ _CATEGORY = {
     'plugins': '💎'
 }
 SAVED_SETTINGS = get_collection("CONFIGS")
+PRVT_MSG = {}
 
 
 async def _init() -> None:
@@ -102,6 +103,30 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     show_alert=True)
         return wrapper
 
+def check_users(func):
+
+        async def prvt_wrapper(_, c_q: CallbackQuery):
+
+            if c_q.from_user.id == PRVT_MSG['_id'] or c_q.from_user.id == Config.OWNER_ID:
+
+                try:
+
+                    await func(c_q)
+
+                except Exception:
+
+                    pass
+
+            else:
+
+                await c_q.answer(
+
+                    "Sorry, you can't see this Private Msg... 😔", show_alert=True)
+
+        return prvt_wrapper
+
+    @ubot.
+    
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"\((.+)\)(next|prev)\((\d+)\)"))
     @check_owner
     async def callback_next_prev(callback_query: CallbackQuery):

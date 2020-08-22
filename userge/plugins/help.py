@@ -99,11 +99,11 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             else:
                 user_dict = await ubot.get_user_dict(Config.OWNER_ID)
                 await c_q.answer(
-                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @ripuserge 🤘",
+                    f"Only {user_dict['flname']} Can Access this...! Build Your Own @TheUserge 🤘",
                     show_alert=True)
         return wrapper
 
-def check_users(func):
+    def check_users(func):
         async def prvt_wrapper(_, c_q: CallbackQuery):
             if c_q.from_user.id == PRVT_MSG['_id'] or c_q.from_user.id == Config.OWNER_ID:
                 try:
@@ -114,7 +114,7 @@ def check_users(func):
                 await c_q.answer(
                     "Sorry, you can't see this Private Msg... 😔", show_alert=True)
         return prvt_wrapper
-    
+
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"\((.+)\)(next|prev)\((\d+)\)"))
     @check_owner
     async def callback_next_prev(callback_query: CallbackQuery):
@@ -145,7 +145,7 @@ def check_users(func):
             await callback_query.answer("you are in main menu", show_alert=True)
             return
         if len(pos_list) == 2:
-            text = "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**"
+            text = "🖥 **Userge Main Menu** 🖥"
             buttons = main_menu_buttons()
         elif len(pos_list) == 3:
             text, buttons = category_data(cur_pos)
@@ -192,7 +192,7 @@ def check_users(func):
     @check_owner
     async def callback_mm(callback_query: CallbackQuery):
         await callback_query.edit_message_text(
-            "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
+            "🖥 **Userge Main Menu** 🖥", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
 
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"^chgclnt$"))
     @check_owner
@@ -346,7 +346,7 @@ def check_users(func):
         buttons = [tmp_btns] + buttons
         return text, buttons
 
-@ubot.on_callback_query(filters=Filters.regex(pattern=r"^prvtmsg$"))
+    @ubot.on_callback_query(filters=Filters.regex(pattern=r"^prvtmsg$"))
     @check_users
     async def prvt_msg(_, c_q: CallbackQuery):
         prvte_msg = PRVT_MSG["msg"]
@@ -357,22 +357,23 @@ def check_users(func):
         results = [
             InlineQueryResultArticle(
                 id=uuid4(),
-                title="RAVANA USERGE",
+                title="Repo",
                 input_message_content=InputTextMessageContent(
-                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.5`\n• **pyrogram version :** `0.18.0-async`\n• **userge version :** `0.1.7-custom`\n• **unofficial enabled :** `True`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
+                    "**Here's how to setup Userge** 😎"
                 ),
-                url="https://github.com/ravana69/Userge",
-                description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
-                thumb_url="https://0x0.st/ixJN.jpg",
+                url="https://github.com/UsergeTeam/Userge",
+                description="Setup Your Own",
+                thumb_url="https://imgur.com/download/Inyeb1S",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "🍆Pornage Repo🤷‍♀️",
-                                url="https://github.com/ravana69/Userge"),
+                                "🧰 Userge Repo",
+                                url="https://github.com/UsergeTeam/Userge"),
                             InlineKeyboardButton(
-                                "💎Unofficial Plugins💎",
-                                url=("https://github.com/ravana69/Userge-Plugins"))
+                                "🖥 Deploy Userge",
+                                url=("https://heroku.com/deploy?template="
+                                     "https://github.com/UsergeTeam/Userge/tree/master"))
                         ]
                     ]
                 )
@@ -384,11 +385,11 @@ def check_users(func):
                     id=uuid4(),
                     title="Main Menu",
                     input_message_content=InputTextMessageContent(
-                        "**🖥 Userge Main Menu 🖥**\n\n▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀\n\n============================="
+                        "🖥 **Userge Main Menu** 🖥"
                     ),
-                    url="https://github.com/ravana69/Userge",
+                    url="https://github.com/UsergeTeam/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://0x0.st/iLYd.jpg",
+                    thumb_url="https://imgur.com/download/Inyeb1S",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )

@@ -346,6 +346,12 @@ def check_users(func):
         buttons = [tmp_btns] + buttons
         return text, buttons
 
+@ubot.on_callback_query(filters=Filters.regex(pattern=r"^prvtmsg$"))
+    @check_users
+    async def prvt_msg(_, c_q: CallbackQuery):
+        prvte_msg = PRVT_MSG["msg"]
+        await c_q.answer(prvte_msg, show_alert=True)
+
     @ubot.on_inline_query()
     async def inline_answer(_, inline_query: InlineQuery):
         results = [
@@ -386,4 +392,26 @@ def check_users(func):
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )
+            if '-' in inline_query.query:
+                username, msg = inline_query.query.split('-', maxsplit=1)
+                PRVT_MSG.clear()
+                prvte_msg = [[InlineKeyboardButton("Show Message 🔐", callback_data="prvtmsg")]]
+                try:
+                    user = await userge.get_users(username.strip())
+                except Exception:
+                    return
+
+                PRVT_MSG['_id'] = user.id
+                PRVT_MSG['msg'] = msg.strip()
+                msg_c = f"🔒 A private message to {user.username}, Only he/she can open it."
+                results.append(
+                    InlineQueryResultArticle(
+                        id=uuid4(),
+                        title=f"A Private Msg to {user.first_name}",
+                        input_message_content=InputTextMessageContent(msg_c),
+                        description="Only he/she can open it",
+                        thumb_url="https://imgur.com/download/Inyeb1S",
+                        reply_markup=InlineKeyboardMarkup(prvte_msg)
+                    )
+                )
         await inline_query.answer(results=results, cache_time=1)

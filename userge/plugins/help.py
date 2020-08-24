@@ -133,7 +133,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             await callback_query.answer("you are in main menu", show_alert=True)
             return
         if len(pos_list) == 2:
-            text = "🖥 **Userge Main Menu** 🖥"
+            text = "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**"
             buttons = main_menu_buttons()
         elif len(pos_list) == 3:
             text, buttons = category_data(cur_pos)
@@ -180,7 +180,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
     @check_owner
     async def callback_mm(callback_query: CallbackQuery):
         await callback_query.edit_message_text(
-            "🖥 **Userge Main Menu** 🖥", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
+            "**▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀**", reply_markup=InlineKeyboardMarkup(main_menu_buttons()))
 
     @ubot.on_callback_query(filters=Filters.regex(pattern=r"^chgclnt$"))
     @check_owner
@@ -348,23 +348,22 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
         results = [
             InlineQueryResultArticle(
                 id=uuid4(),
-                title="Repo",
+                title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**Here's how to setup Userge** 😎"
+                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n• **python version :** `3.8.5`\n• **pyrogram version :** `0.18.0-async`\n• **userge version :** `0.1.7-custom`\n• **unofficial enabled :** `True`\n• **license :** GNU General Public License v3.0\n• **copyright :** Copyright (C) 2020 by UsergeTeam@Github"
                 ),
-                url="https://github.com/UsergeTeam/Userge",
-                description="Setup Your Own",
-                thumb_url="https://imgur.com/download/Inyeb1S",
+                url="https://github.com/ravana69/Userge",
+                description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
+                thumb_url="https://0x0.st/igxg.jpg",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "🧰 Userge Repo",
-                                url="https://github.com/UsergeTeam/Userge"),
+                                "🍆Pornage Repo🤷‍♀️",
+                                url="https://github.com/ravana69/Userge"),
                             InlineKeyboardButton(
-                                "🖥 Deploy Userge",
-                                url=("https://heroku.com/deploy?template="
-                                     "https://github.com/UsergeTeam/Userge/tree/master"))
+                                "💎Unofficial Plugins💎",
+                                url=("https://github.com/ravana69/Userge-Plugins"))
                         ]
                     ]
                 )
@@ -376,18 +375,18 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     id=uuid4(),
                     title="Main Menu",
                     input_message_content=InputTextMessageContent(
-                        "🖥 **Userge Main Menu** 🖥"
+                        "**🖥 Userge Main Menu 🖥**\n\n▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀\n\n============================="
                     ),
-                    url="https://github.com/UsergeTeam/Userge",
+                    url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",
-                    thumb_url="https://imgur.com/download/Inyeb1S",
+                    thumb_url="https://0x0.st/igxY.jpg",
                     reply_markup=InlineKeyboardMarkup(main_menu_buttons())
                 )
             )
             if '-' in inline_query.query:
                 username, msg = inline_query.query.split('-', maxsplit=1)
                 PRVT_MSG.clear()
-                prvte_msg = [[InlineKeyboardButton("Show Message 🔐", callback_data="prvtmsg")]]
+                prvte_msg = [[InlineKeyboardButton("Show Secret Message 😈", callback_data="prvtmsg")]]
                 try:
                     user = await userge.get_user_dict(username.strip())
                 except Exception:
@@ -396,11 +395,11 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 PRVT_MSG['_id'] = user['id']
                 PRVT_MSG['name'] = user['flname']
                 PRVT_MSG['msg'] = msg.strip()
-                msg_c = f"🔒 A private message to {'@' + user['mention']}, Only he/she can open it."
+                msg_c = f"🍆 Hidden Message Has Been Sent By @r4v4n4 To {'@' + user['mention']}, Only he/she can open it."
                 results.append(
                     InlineQueryResultArticle(
                         id=uuid4(),
-                        title=f"A Private Msg to {user['fname']}",
+                        title=f"A Secret Msg to {user['fname']}",
                         input_message_content=InputTextMessageContent(msg_c),
                         description="Only he/she can open it",
                         thumb_url="https://imgur.com/download/Inyeb1S",

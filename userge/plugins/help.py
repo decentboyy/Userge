@@ -395,14 +395,14 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 PRVT_MSG['_id'] = user['id']
                 PRVT_MSG['name'] = user['flname']
                 PRVT_MSG['msg'] = msg.strip()
-                msg_c = f"🍆 Hidden Message Has Been Sent By @r4v4n4 To {'@' + user['mention']}, Only he/she can open it."
+                msg_c = f"🍆 Hidden Secret Message Has Been Sent By @R4V4N4 To {'@' + user['mention']}, Only this gey could open it."
                 results.append(
                     InlineQueryResultArticle(
                         id=uuid4(),
                         title=f"A Secret Msg to {user['fname']}",
                         input_message_content=InputTextMessageContent(msg_c),
-                        description="Only he/she can open it",
-                        thumb_url="https://imgur.com/download/Inyeb1S",
+                        description="Only this gey could open it",
+                        thumb_url="https://0x0.st/igU_.jpg",
                         reply_markup=InlineKeyboardMarkup(prvte_msg)
                     )
                 )

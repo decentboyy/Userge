@@ -41,8 +41,8 @@ OAUTH_SCOPE = ["https://www.googleapis.com/auth/drive",
                "https://www.googleapis.com/auth/drive.metadata"]
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 G_DRIVE_DIR_MIME_TYPE = "application/vnd.google-apps.folder"
-G_DRIVE_FILE_LINK = "📄 <a href='t.me'>{}</a> __({})__"
-G_DRIVE_FOLDER_LINK = "📁 <a href='t.me'>{}</a> __(folder)__"
+G_DRIVE_FILE_LINK = "📄 <a href=''>{}</a> __({})__"
+G_DRIVE_FOLDER_LINK = "📁 <a href=''>{}</a> __(folder)__"
 
 _LOG = userge.getLogger(__name__)
 _SAVED_SETTINGS = get_collection("CONFIGS")

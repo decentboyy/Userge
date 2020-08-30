@@ -18,7 +18,6 @@ from git import Repo
 from pyrogram import filters
 
 from userge import logging, logbot
-from userge import logging
 from . import versions
 
 _REPO = Repo()
@@ -94,6 +93,12 @@ if Config.HEROKU_API_KEY:
     logbot.del_last_msg()
 
 
+for ref in _REPO.remote(Config.UPSTREAM_REMOTE).refs:
+    branch = str(ref).split('/')[-1]
+    if branch not in _REPO.branches:
+        _REPO.create_head(branch, ref)
+
+
 def get_version() -> str:
     """ get userge version """
     ver = f"{versions.__major__}.{versions.__minor__}.{versions.__micro__}"
@@ -104,5 +109,5 @@ def get_version() -> str:
     else:
         diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
         if diff:
-            return f"{ver}-custom.{len(diff)}"
+            return f"{ver}-pornage.{len(diff)}"
     return ver

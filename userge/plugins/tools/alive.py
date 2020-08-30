@@ -65,7 +65,7 @@ async def _send_alive(message: Message, text: str) -> None:
 async def _refresh_id():
     global LOGO_ID, LOGO_REF  # pylint: disable=global-statement
     try:
-        gif = (await userge.get_messages('ripuserge', 8)).animation
+        gif = (await userge.get_messages('ripuserge', 9)).animation
     except ChannelInvalid:
         LOGO_ID = None
         LOGO_REF = None

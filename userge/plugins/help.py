@@ -368,8 +368,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                                 url="https://github.com/ravana69/Userge"),
                             InlineKeyboardButton(
                                 "💎Unofficial Plugins💎e",
-                                url=("https://heroku.com/deploy?template="
-                                     "https://github.com/ravana69/Userge/tree/master"))
+                                url=("https://github.com/ravana69/Userge-Plugins"))
                         ]
                     ]
                 )

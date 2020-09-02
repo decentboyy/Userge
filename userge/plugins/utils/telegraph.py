@@ -31,7 +31,7 @@ async def telegraph_(message: Message):
                 and replied.video.file_size <= _T_LIMIT)
             or (replied.document
                 and replied.document.file_name.endswith(
-                    ('.jpg', '.jpeg', '.png', '.gif', '.mp4'))
+                    ('.webp, '.tgs', '.jpg', '.jpeg', '.png', '.gif', '.mp4'))
                 and replied.document.file_size <= _T_LIMIT)):
         await message.err("not supported!")
         return

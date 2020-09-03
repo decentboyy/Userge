@@ -110,7 +110,7 @@ def get_version() -> str:
         if diff:
             return f"{ver}-patch.{len(diff)}"
     else:
-        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
+        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/alpha..HEAD'))
         if diff:
             return f"{ver}-custom.{len(diff)}"
     return ver

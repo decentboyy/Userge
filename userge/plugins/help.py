@@ -374,6 +374,34 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 )
             )
         ]
+ 
+    @ubot.on_inline_query()
+    async def inline_answer(_, inline_query: InlineQuery):
+        results = [
+            InlineQueryResultArticle(
+                id=uuid4(),
+                title="MY IMDB",
+                input_message_content=InputTextMessageContent(
+                   "**Title:** Choot i Raani (1969)\n**Rating ⭐️:** 10 / 10\n(5.5 based on 7,610 user ratings) |U | 0h 69min |\n**Release Info:** 14 Feb 1969 (Inda)\n**Genre:** 🌋 #Adventure 🤣 #Comedy #Family\n**Language:**  #Bhojpuri #English\n**Country of Origin:**  #India\n**Story Line:** A young man Ravana moves from Bihar to Florida with his dick, where he's compelled to engage in a sux to protect a population of endangered Choots.\n**Director:** Ravana @r4v4n4\n**Writers:** Ravana @r4v4n4\n**Stars:**  Ravana @r4v4n4\n[Read More ...](https://da.gd/qGtPI)"
+                ),
+                url="https://t.me/r4v4n4",
+                description="Farzi IMDB Hai Bhai.",
+                thumb_url="https://da.gd/qGtPI",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "Open On IMDB ▶️",
+                                url="https://github.com/ravana69/Userge"),
+                            InlineKeyboardButton(
+                                "Share Me",
+                                url=("https://t.me/share/url?text=@runmyfcukingbot"))
+                        ]
+                    ]
+                )
+            )
+        ]
+
         if inline_query.from_user and inline_query.from_user.id == Config.OWNER_ID:
             results.append(
                 InlineQueryResultArticle(

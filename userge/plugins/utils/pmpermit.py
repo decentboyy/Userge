@@ -208,11 +208,11 @@ async def uninvitedPmHandler(message: Message):
             pmCounter[message.from_user.id] += 1
             await message.reply(
                 f"You have {pmCounter[message.from_user.id]} out of 4 **Warnings**\n"
-                "Please wait untill you get aprroved to pm !", del_in=5)
+                "Please wait until you get approved to pm !", del_in=5)
     else:
         pmCounter.update({message.from_user.id: 1})
         await message.reply(
-            noPmMessage.format_map(SafeDict(**user_dict)) + '\n`- Protected by @rendikhana`')
+            noPmMessage.format_map(SafeDict(**user_dict)) + '\n`- Protected by` @rendikhana')
         await asyncio.sleep(1)
         await CHANNEL.log(f"#NEW_MESSAGE\n{user_dict['mention']} has messaged you")
 

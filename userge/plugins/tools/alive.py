@@ -35,7 +35,7 @@ async def alive(message: Message):
     **__Python__**: `{versions.__python_version__}`
     **__Pyrogram__**: `{versions.__pyro_version__}`
 
-**{versions.__license__}** | **{versions.__copyright__}** | **[Repo]({Config.UPSTREAM_REPO})**
+**[🧞‍♂️Pornage Repository🧞‍♀️]({Config.UPSTREAM_REPO})**
 """
     try:
         await _send_alive(message, output)

@@ -17,9 +17,7 @@ async def see_repo(message: Message):
 
     __Durable as a Lawda__
 
-• **userge version** : `{get_version()}`
-• **license** : {versions.__license__}
-• **copyright** : {versions.__copyright__}
+• **pornage version** : `{get_version()}`
 • **repo** : [Userge]({Config.UPSTREAM_REPO})
 """
     await message.edit(output)

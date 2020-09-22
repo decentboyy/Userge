@@ -219,7 +219,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             await c_q.answer(msg, show_alert=True)
         else:
             await c_q.answer(
-                f"Madarchod isko {flname} warn kiya hai, teri kyu jal rahi hai behenchox... 😔", show_alert=True)
+                f"User {flname} has been warned. Only Pros from @rendikhana can unban me 😔", show_alert=True)
 
     def is_filter(name: str) -> bool:
         split_ = name.split('.')
@@ -408,7 +408,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                         id=uuid4(),
                         title=f"A Secret Msg to {user.first_name}",
                         input_message_content=InputTextMessageContent(msg_c),
-                        description="Only i can unwarn him",
+                        description="Warn Kar Bc",
                         thumb_url="https://0x0.st/igU_.jpg",
                         reply_markup=InlineKeyboardMarkup(prvte_msg)
                     )

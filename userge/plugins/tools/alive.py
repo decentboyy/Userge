@@ -71,7 +71,7 @@ async def alive(message: Message):
     try:
         await _send_alive(message, output, markup)
     except (FileIdInvalid, FileReferenceEmpty, BadRequest):
-        await _refresh_id()
+        await _refresh_id(message)
         await _send_alive(message, output, markup)
 
 
@@ -89,31 +89,38 @@ def _parse_arg(arg: bool) -> str:
 
 async def _send_alive(message: Message,
                       text: str,
-                      reply_markup: Optional[InlineKeyboardMarkup]) -> None:
+                      reply_markup: Optional[InlineKeyboardMarkup],
+                      recurs_count: int = 0) -> None:
     if not (_LOGO_ID and _LOGO_REF):
-        await _refresh_id()
+        await _refresh_id(message)
+    should_mark = None if _IS_STICKER else reply_markup
     try:
         await message.client.send_cached_media(chat_id=message.chat.id,
                                                file_id=_LOGO_ID,
                                                file_ref=_LOGO_REF,
                                                caption=text,
-                                               reply_markup=reply_markup)
+                                               reply_markup=should_mark)
         if _IS_STICKER:
-            raise MediaEmpty
-    except (MediaEmpty, ChatSendMediaForbidden):
+            raise ChatSendMediaForbidden
+    except MediaEmpty:
+        if recurs_count >= 2:
+            raise ChatSendMediaForbidden
+        await _refresh_id(message)
+        return await _send_alive(message, text, reply_markup, recurs_count + 1)
+    except ChatSendMediaForbidden:
         await message.client.send_message(chat_id=message.chat.id,
                                           text=text,
                                           reply_markup=reply_markup,
                                           disable_web_page_preview=True)
 
 
-async def _refresh_id() -> None:
+async def _refresh_id(message: Message) -> None:
     global _LOGO_ID, _LOGO_REF, _IS_STICKER  # pylint: disable=global-statement
     try:
-        media = await userge.get_messages(_CHAT, _MSG_ID)
+        media = await message.client.get_messages(_CHAT, _MSG_ID)
     except ChannelInvalid:
         _set_data(True)
-        return await _refresh_id()
+        return await _refresh_id(message)
     else:
         if media.sticker:
             _IS_STICKER = True

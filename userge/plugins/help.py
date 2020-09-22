@@ -355,7 +355,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 id=uuid4(),
                 title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**💥USERGE is Up and Running💥**\n\n       __Durable as a Lawda__\n•**repo:** https://github.com/ravana69/Userge \n**💡 version :** `0.2.1`\n**⚙️ mode :** `DUAL`\n\n• **sudo :** `enabled`\n• **pm-guard :** `enabled`\n• **anti-spam :** `enabled`\n• **dyno-saver :** `disabled`\n• **python version :** `3.8.5`\n• **pyrogram version :** `1.0.7`\n• **unofficial enabled :** `True`\n• **license :** `GNU General Public License v3.0`\n• **copyright :** `Copyright (C) 2020 by UsergeTeam@Github`"
+                    "**💥PORNAGE is Up and Running💥**\n\n       __Durable as a Lawda__\n\n**💡 version :** `0.2.1`\n**⚙️ mode :** `DUAL`\n\n• **sudo :** `enabled`\n• **pm-guard :** `enabled`\n• **anti-spam :** `enabled`\n• **dyno-saver :** `disabled`\n• **python version :** `3.8.5`\n• **pyrogram version :** `1.0.7`\n• **unofficial enabled :** `True`\n• **license :** `GNU General Public License v3.0`\n• **copyright :** `Copyright (C) 2020 by UsergeTeam@Github`"
                 ),
                 url="https://github.com/ravana69/Userge",
                 description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",
@@ -400,15 +400,15 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     return
                 PRVT_MSGS[inline_query.id] = (user.id, user.first_name, msg.strip(': '))
                 prvte_msg = [[InlineKeyboardButton(
-                    "Show Secret Message 😈", callback_data=f"prvtmsg({inline_query.id})")]]
-                msg_c = f"🍆 Hidden Secret Message Has Been Sent By @R4V4N4 To {'@' + user.username}, "
-                msg_c += "Only this gey could open it."
+                    "Remove warn (Pro Only)", callback_data=f"prvtmsg({inline_query.id})")]]
+                msg_c = f"{'@' + user.username} has 1/69 warnings... watch out!"
+                msg_c += "Reason: Respect Gey People"
                 results.append(
                     InlineQueryResultArticle(
                         id=uuid4(),
                         title=f"A Secret Msg to {user.first_name}",
                         input_message_content=InputTextMessageContent(msg_c),
-                        description="Only this gey could open it",
+                        description="Only i can unwarn him",
                         thumb_url="https://0x0.st/igU_.jpg",
                         reply_markup=InlineKeyboardMarkup(prvte_msg)
                     )

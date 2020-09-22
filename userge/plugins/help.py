@@ -219,7 +219,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             await c_q.answer(msg, show_alert=True)
         else:
             await c_q.answer(
-                f"Madarchod Only {flname} can see this Secret Message... 😔", show_alert=True)
+                f"Madarchod isko {flname} warn kiya hai, teri kyu jal rahi hai behenchox... 😔", show_alert=True)
 
     def is_filter(name: str) -> bool:
         split_ = name.split('.')

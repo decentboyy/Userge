@@ -93,5 +93,5 @@ def get_version() -> str:
     else:
         diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
         if diff:
-            return f"{ver}-custom.{len(diff)}"
+            return f"{ver}-Pornage.{len(diff)}"
     return ver

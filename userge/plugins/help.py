@@ -355,7 +355,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 id=uuid4(),
                 title="RAVANA USERGE",
                 input_message_content=InputTextMessageContent(
-                    "**💥PORNAGE is Up and Running💥**\n\n       __Durable as a Lawda__\n\n**💡 version :** `0.2.1`\n**⚙️ mode :** `DUAL`\n\n• **sudo :** `enabled`\n• **pm-guard :** `enabled`\n• **anti-spam :** `enabled`\n• **dyno-saver :** `disabled`\n• **python version :** `3.8.5`\n• **pyrogram version :** `1.0.7`\n• **unofficial enabled :** `True`\n• **license :** `GNU General Public License v3.0`\n• **copyright :** `Copyright (C) 2020 by UsergeTeam@Github`"
+                    "**💥PORNAGE is Up and Running💥**\n\n       __Durable as a Lawda__\n\n**💡 version :** `0.2.1`\n**⚙️ mode :** `DUAL`\n\n• **sudo :** `enabled`\n• **pm-guard :** `enabled`\n• **anti-spam :** `enabled`\n• **dyno-saver :** `disabled`\n• **python version :** `3.8.6`\n• **pyrogram version :** `1.0.7`\n• **unofficial enabled :** `True`\n• **license :** `GNU General Public License v3.0`\n• **copyright :** `Copyright (C) 2020 by UsergeTeam@Github`"
                 ),
                 url="https://github.com/ravana69/Userge",
                 description="Mai Muth Maar Raha Hoon, Tum Bhi Muth Maro...",

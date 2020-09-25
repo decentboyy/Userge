@@ -241,9 +241,9 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             pairs = pairs[current_page*rows:(current_page + 1)*rows] + [
                 [
                     InlineKeyboardButton(
-                        "⏪ Previous", callback_data=f"({cur_pos})prev({current_page})".encode()),
+                        "⩤", callback_data=f"({cur_pos})prev({current_page})".encode()),
                     InlineKeyboardButton(
-                        "⏩ Next", callback_data=f"({cur_pos})next({current_page})".encode())],
+                        "⩥", callback_data=f"({cur_pos})next({current_page})".encode())],
             ]
         pairs += default_buttons(cur_pos)
         return pairs
@@ -380,7 +380,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     id=uuid4(),
                     title="Main Menu",
                     input_message_content=InputTextMessageContent(
-                        "**🖥 Userge Main Menu 🖥**\n\n▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀\n\n============================="
+                        "**🖥 Pornage Main Menu 🖥**\n\n▄▄▀█▄───▄───────▄\n▀▀▀██──███─────███\n░▄██▀░█████░░░█████░░\n███▀▄███░███░███░███░▄\n▀█████▀░░░▀███▀░░░▀██▀\n\n============================="
                     ),
                     url="https://github.com/ravana69/Userge",
                     description="Userge Main Menu",

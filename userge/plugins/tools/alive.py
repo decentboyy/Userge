@@ -63,7 +63,7 @@ async def alive(message: Message):
                 InlineKeyboardButton(text="👥 Unnofficial Plugins", url="https://github.com/ravana69/userge-plugins"),
                 InlineKeyboardButton(text="🧪 Repo", url=Config.UPSTREAM_REPO)
             ],
-            [InlineKeyboardButton(text="🎖 Code Editor", url=https://t.me/r4v4n4)]
+            [InlineKeyboardButton(text="🎖 Code Editor", url="https://t.me/r4v4n4")]
         ])
     if _MSG_ID == "text_format":
         return await message.edit(output, reply_markup=markup, disable_web_page_preview=True)

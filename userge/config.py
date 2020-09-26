@@ -29,7 +29,7 @@ class Config:
     """ Configs to setup Userge """
     API_ID = int(os.environ.get("API_ID"))
     API_HASH = os.environ.get("API_HASH")
-    WORKERS = int(os.environ.get("WORKERS"))
+    WORKERS = min(32, int(os.environ.get("WORKERS")) or os.cpu_count() + 4)
     BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
     HU_STRING_SESSION = os.environ.get("HU_STRING_SESSION", None)
     OWNER_ID = int(os.environ.get("OWNER_ID", 0))
@@ -41,7 +41,10 @@ class Config:
     SUDO_TRIGGER = os.environ.get("SUDO_TRIGGER")
     FINISHED_PROGRESS_STR = os.environ.get("FINISHED_PROGRESS_STR")
     UNFINISHED_PROGRESS_STR = os.environ.get("UNFINISHED_PROGRESS_STR")
+    ALIVE_MEDIA = os.environ.get("ALIVE_MEDIA", None)
     CUSTOM_PACK_NAME = os.environ.get("CUSTOM_PACK_NAME")
+    INSTA_ID = os.environ.get("INSTA_ID")
+    INSTA_PASS = os.environ.get("INSTA_PASS")
     UPSTREAM_REPO = os.environ.get("UPSTREAM_REPO")
     UPSTREAM_REMOTE = os.environ.get("UPSTREAM_REMOTE")
     SCREENSHOT_API = os.environ.get("SCREENSHOT_API", None)
@@ -60,7 +63,6 @@ class Config:
     GOOGLE_CHROME_BIN = os.environ.get("GOOGLE_CHROME_BIN", None)
     HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", None)
     HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", None)
-    HEROKU_GIT_URL = os.environ.get("HEROKU_GIT_URL", None)
     G_DRIVE_IS_TD = os.environ.get("G_DRIVE_IS_TD") == "true"
     LOAD_UNOFFICIAL_PLUGINS = os.environ.get("LOAD_UNOFFICIAL_PLUGINS") == "true"
     THUMB_PATH = DOWN_PATH + "thumb_image.jpg"
@@ -78,28 +80,9 @@ class Config:
     ALLOWED_COMMANDS: Set[str] = set()
     ANTISPAM_SENTRY = False
     RUN_DYNO_SAVER = False
-    HEROKU_APP = None
+    HEROKU_APP = heroku3.from_key(HEROKU_API_KEY).apps()[HEROKU_APP_NAME] \
+        if HEROKU_API_KEY and HEROKU_APP_NAME else None
     STATUS = None
-
-
-if Config.HEROKU_API_KEY:
-    logbot.reply_last_msg("Checking Heroku App...", _LOG.info)
-    for heroku_app in heroku3.from_key(Config.HEROKU_API_KEY).apps():
-        if (heroku_app and Config.HEROKU_APP_NAME
-                and heroku_app.name == Config.HEROKU_APP_NAME):
-            _LOG.info("Heroku App : %s Found...", heroku_app.name)
-            Config.HEROKU_APP = heroku_app
-            break
-    logbot.del_last_msg()
-
-
-try:
-    for ref in _REPO.remote(Config.UPSTREAM_REMOTE).refs:
-        branch = str(ref).split('/')[-1]
-        if branch not in _REPO.branches:
-            _REPO.create_head(branch, ref)
-except ValueError as v_e:
-    _LOG.error(v_e)
 
 
 def get_version() -> str:
@@ -110,7 +93,7 @@ def get_version() -> str:
         if diff:
             return f"{ver}-patch.{len(diff)}"
     else:
-        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/alpha..HEAD'))
+        diff = list(_REPO.iter_commits(f'{Config.UPSTREAM_REMOTE}/master..HEAD'))
         if diff:
-            return f"{ver}-custom.{len(diff)}"
+            return f"{ver}-Pornage.{len(diff)}"
     return ver

@@ -100,7 +100,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             else:
                 user_dict = await ubot.get_user_dict(Config.OWNER_ID)
                 await c_q.answer(
-                    f"Betichod Only {user_dict['flname']} Can Access this...! Build Your Own @ripuserge 🤘",
+                    f"Only User {user_dict['flname']} Has Permission To Be Admin.🤘",
                     show_alert=True)
         return wrapper
 
@@ -400,15 +400,15 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                     return
                 PRVT_MSGS[inline_query.id] = (user.id, user.first_name, msg.strip(': '))
                 prvte_msg = [[InlineKeyboardButton(
-                    "Remove warn (Pro Only)", callback_data=f"prvtmsg({inline_query.id})")]]
-                msg_c = f"{'@' + user.username} has 1/69 warnings... watch out!"
-                msg_c += "Reason: Respect Gey People"
+                    "PROMOTE", callback_data=f"prvtmsg({inline_query.id})")]]
+                msg_c = f"{'@' + user.username} has been suggested to be added as admin"
+                msg_c += "Click "PROMOTE" to be admin"
                 results.append(
                     InlineQueryResultArticle(
                         id=uuid4(),
-                        title=f"A Secret Msg to {user.first_name}",
+                        title=f"Admin Promotion for {user.first_name} activated",
                         input_message_content=InputTextMessageContent(msg_c),
-                        description="Warn Kar Bc",
+                        description="Adminship phek ke marunga",
                         thumb_url="https://0x0.st/igU_.jpg",
                         reply_markup=InlineKeyboardMarkup(prvte_msg)
                     )

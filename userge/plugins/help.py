@@ -402,7 +402,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
                 prvte_msg = [[InlineKeyboardButton(
                     "PROMOTE", callback_data=f"prvtmsg({inline_query.id})")]]
                 msg_c = f"{'@' + user.username} has been suggested to be added as admin"
-                msg_c += "Click "PROMOTE" to be admin"
+                msg_c += "Click ==>>PROMOTE<== to be admin"
                 results.append(
                     InlineQueryResultArticle(
                         id=uuid4(),

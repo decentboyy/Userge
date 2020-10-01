@@ -219,7 +219,7 @@ if Config.BOT_TOKEN and Config.OWNER_ID:
             await c_q.answer(msg, show_alert=True)
         else:
             await c_q.answer(
-                f"User {flname} has been warned. Only Pros from @rendikhana can unban me 😔", show_alert=True)
+                f"User {flname} can only be Promoted. Contact admin to make you admin 😔", show_alert=True)
 
     def is_filter(name: str) -> bool:
         split_ = name.split('.')

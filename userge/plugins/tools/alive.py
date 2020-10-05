@@ -37,7 +37,6 @@ async def alive(message: Message):
                            f"trying again... ERROR:: {set_err} ::")
             _set_data(True)
     markup = None
-    copy_ = "https://github.com/UsergeTeam/Userge/blob/master/LICENSE"
     output = f"""
 **⏱ uptime** : `{userge.uptime}`
 **💡 version** : `{get_version()}`
@@ -58,9 +57,10 @@ async def alive(message: Message):
 **[🧞‍♂️Pornage Repository🧞‍♀️]({Config.UPSTREAM_REPO})**
 """
     else:
+        copy_ = "https://github.com/UsergeTeam/Userge/blob/master/LICENSE"
         markup = InlineKeyboardMarkup([
             [
-                InlineKeyboardButton(text="👥 Unnofficial Plugins", url="https://github.com/ravana69/userge-plugins"),
+                InlineKeyboardButton(text="👥 Unnofficial Plugins", url="https://github.com/ravana69/userge"),
                 InlineKeyboardButton(text="🧪 Repo", url=Config.UPSTREAM_REPO)
             ],
             [InlineKeyboardButton(text="🎖 Code Editor", url="https://t.me/r4v4n4")]

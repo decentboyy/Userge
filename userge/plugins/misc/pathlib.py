@@ -20,9 +20,7 @@ from os.path import (
     join, splitext, basename, dirname, relpath, exists, isdir, isfile)
 from zipfile import ZipFile, is_zipfile
 from tarfile import TarFile, is_tarfile, open as tar_open
-from multiprocessing import Manager
 from typing import Union, List, Tuple, Sequence
-from ctypes import c_bool, c_int, c_wchar_p
 
 from rarfile import RarFile, is_rarfile
 
@@ -37,16 +35,16 @@ class _BaseLib:
     """ Base Class for PackLib and SCLib """
     def __init__(self) -> None:
         self._final_file_path = ""
-        self._current = Manager().Value(c_int, 0)
+        self._current = 0
         self._total = 0
-        self._output = Manager().Value(c_wchar_p, '')
-        self._is_canceled = Manager().Value(c_bool, False)
-        self._is_finished = Manager().Value(c_bool, False)
+        self._output = ''
+        self._is_canceled = False
+        self._is_finished = False
 
     @property
     def completed_files(self) -> int:
         """ Returns completed files """
-        return self._current.value
+        return self._current
 
     @property
     def total_files(self) -> int:
@@ -56,40 +54,39 @@ class _BaseLib:
     @property
     def percentage(self) -> int:
         """ Returns percentage """
-        return int(round((self._current.value / self._total) * 100, 2))
+        return int(round((self._current / self._total) * 100, 2))
 
     @property
     def progress(self) -> str:
         """ Returns progress """
         percentage = self.percentage
-        progress_str = "[{}{}]".format(
+        return "[{}{}]".format(
             ''.join((Config.FINISHED_PROGRESS_STR
                      for i in range(floor(percentage / 5)))),
             ''.join((Config.UNFINISHED_PROGRESS_STR
                      for i in range(20 - floor(percentage / 5)))))
-        return progress_str
 
     @property
     def canceled(self) -> bool:
         """ Returns True if canceled """
-        return self._is_canceled.value
+        return self._is_canceled
 
     @property
     def finished(self) -> bool:
         """ Returns True if finished """
-        return self._current.value == self._total or self._is_finished.value
+        return self._current == self._total or self._is_finished
 
     def cancel(self) -> None:
         """ Cancel running thread """
-        self._is_canceled.value = True
+        self._is_canceled = True
 
     def _finish(self) -> None:
-        self._is_finished.value = True
+        self._is_finished = True
 
     @property
     def output(self) -> str:
         """ Returns output """
-        return self._output.value
+        return self._output
 
     @property
     def final_file_path(self) -> str:
@@ -113,53 +110,46 @@ class PackLib(_BaseLib):
         with p_type(final_file_path, 'w') as p_f:
             try:
                 for file_ in file_paths:
-                    if self._is_canceled.value:
+                    if self._is_canceled:
                         raise ProcessCanceled
                     if isinstance(p_f, ZipFile):
                         p_f.write(file_, relpath(file_, root))
                     else:
                         p_f.add(file_, relpath(file_, root))
-                    self._current.value += 1
+                    self._current += 1
             except ProcessCanceled:
-                self._output.value = "`process canceled!`"
+                self._output = "`process canceled!`"
             except Exception as z_e:
                 _LOG.exception(z_e)
-                self._output.value = str(z_e)
+                self._output = str(z_e)
             finally:
                 self._finish()
 
-    @staticmethod
-    def _unpack(file_path: str,
-                file_names: List[str],
-                final_file_path: str,
-                counter,
-                output,
-                is_canceled,
-                is_finished) -> None:
-        if is_zipfile(file_path):
+    def _unpack(self, file_names: List[str]) -> None:
+        if is_zipfile(self._file_path):
             u_type = ZipFile
-        elif is_rarfile(file_path):
+        elif is_rarfile(self._file_path):
             u_type = RarFile
         else:
             u_type = tar_open
-        with u_type(file_path, 'r') as p_f:
+        with u_type(self._file_path, 'r') as p_f:
             for file_name in file_names:
-                if is_canceled.value:
-                    if not output.value:
-                        output.value = "`process canceled!`"
-                    if not is_finished.value:
-                        is_finished.value = True
-                    raise Exception(output.value)
+                if self._is_canceled:
+                    if not self._output:
+                        self._output = "`process canceled!`"
+                    if not self._is_finished:
+                        self._is_finished = True
+                    break
                 try:
-                    p_f.extract(file_name, final_file_path)
+                    p_f.extract(file_name, self._final_file_path)
                 except FileExistsError:
                     pass
                 except Exception as z_e:
-                    output.value = str(z_e)
-                    is_finished.value = True
-                    raise z_e
+                    self._output = str(z_e)
+                    self._is_finished = True
+                    break
                 else:
-                    counter.value += 1
+                    self._current += 1
 
     def pack_path(self, tar: bool) -> None:
         """ PACK file path """
@@ -204,14 +194,7 @@ class PackLib(_BaseLib):
         self._final_file_path = join(
             Config.DOWN_PATH, dir_name.replace('.tar', '').replace('.', '_'))
         for f_n_s in chunked_file_names:
-            pool.submit_process(self._unpack,
-                                self._file_path,
-                                f_n_s,
-                                self._final_file_path,
-                                self._current,
-                                self._output,
-                                self._is_canceled,
-                                self._is_finished)
+            pool.submit_thread(self._unpack, f_n_s)
 
     def get_info(self) -> Sequence[Tuple[str, int]]:
         """ Returns PACK info """
@@ -260,12 +243,11 @@ class SCLib(_BaseLib):
     def progress(self) -> str:
         """ Returns progress """
         percentage = self.percentage
-        progress_str = "[{}{}]".format(
+        return "[{}{}]".format(
             ''.join((Config.FINISHED_PROGRESS_STR
                      for i in range(floor(percentage / 5)))),
             ''.join((Config.UNFINISHED_PROGRESS_STR
                      for i in range(20 - floor(percentage / 5)))))
-        return progress_str
 
     @property
     def speed(self) -> float:
@@ -281,26 +263,26 @@ class SCLib(_BaseLib):
     def _split_worker(self, times: int) -> None:
         try:
             with open(self._path, "rb") as o_f:
-                for self._current.value in range(self._total):
-                    if self._is_canceled.value:
+                for self._current in range(self._total):
+                    if self._is_canceled:
                         raise ProcessCanceled
                     t_p = join(
                         self._final_file_path,
-                        f"{basename(self._path)}.{str(self._current.value).zfill(5)}")
+                        f"{basename(self._path)}.{str(self._current).zfill(5)}")
                     with open(t_p, "wb") as s_f:
                         for _ in range(times):
                             chunk = o_f.read(self._chunk_size)
-                            if self._is_canceled.value:
+                            if self._is_canceled:
                                 raise ProcessCanceled
                             if not chunk:
                                 break
                             s_f.write(chunk)
                             self._cmp_size += len(chunk)
         except ProcessCanceled:
-            self._output.value = "`process canceled!`"
+            self._output = "`process canceled!`"
         except Exception as s_e:
             _LOG.exception(s_e)
-            self._output.value = str(s_e)
+            self._output = str(s_e)
         finally:
             self._finish()
 
@@ -308,23 +290,23 @@ class SCLib(_BaseLib):
         try:
             with open(self._final_file_path, "wb") as o_f:
                 for file_path in file_list:
-                    if self._is_canceled.value:
+                    if self._is_canceled:
                         raise ProcessCanceled
                     with open(file_path, "rb") as s_f:
                         while True:
                             chunk = s_f.read(self._chunk_size)
-                            if self._is_canceled.value:
+                            if self._is_canceled:
                                 raise ProcessCanceled
                             if not chunk:
                                 break
                             o_f.write(chunk)
                             self._cmp_size += len(chunk)
-                    self._current.value += 1
+                    self._current += 1
         except ProcessCanceled:
-            self._output.value = "`process canceled!`"
+            self._output = "`process canceled!`"
         except Exception as c_e:
             _LOG.exception(c_e)
-            self._output.value = str(c_e)
+            self._output = str(c_e)
         finally:
             self._finish()
 
@@ -357,10 +339,7 @@ class SCLib(_BaseLib):
     'usage': "{tr}ls [path]\n{tr}ls -d : default path"}, allow_channels=False)
 async def ls_dir(message: Message) -> None:
     """ list dir """
-    if '-d' in message.flags:
-        path = Config.DOWN_PATH
-    else:
-        path = message.input_str or '.'
+    path = Config.DOWN_PATH if '-d' in message.flags else message.input_str or '.'
     if not exists(path):
         await message.err("path not exists!")
         return
@@ -377,7 +356,7 @@ async def ls_dir(message: Message) -> None:
                     files += '📹'
                 elif str(p_s).endswith((".zip", ".tar", ".tar.gz", ".rar")):
                     files += '🗜'
-                elif str(p_s).endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico")):
+                elif str(p_s).endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ".webp")):
                     files += '🖼'
                 else:
                     files += '📄'
@@ -453,7 +432,7 @@ async def dremove_(message: Message) -> None:
     await message.edit(f"path : `{path}` **removed** successfully!", del_in=5)
 
 
-@userge.on_cmd('drename ([^|]+)\|([^|]+)', about={
+@userge.on_cmd('drename ([^|]+)\|([^|]+)', about={  # noqa
     'header': "rename a directory or file",
     'usage': "{tr}drename [path / name] | [new name]"}, allow_channels=False)
 async def drename_(message: Message) -> None:
@@ -501,7 +480,7 @@ async def split_(message: Message) -> None:
         if message.process_is_canceled:
             s_obj.cancel()
         count += 1
-        if count >= 5:
+        if count >= Config.EDIT_SLEEP_TIMEOUT:
             count = 0
             await message.try_to_edit(tmp.format(s_obj.progress,
                                                  s_obj.percentage,
@@ -560,7 +539,7 @@ async def combine_(message: Message) -> None:
         if message.process_is_canceled:
             c_obj.cancel()
         count += 1
-        if count >= 5:
+        if count >= Config.EDIT_SLEEP_TIMEOUT:
             count = 0
             await message.try_to_edit(tmp.format(c_obj.progress,
                                                  c_obj.percentage,
@@ -622,7 +601,7 @@ async def _pack_helper(message: Message, tar: bool = False) -> None:
         if message.process_is_canceled:
             p_obj.cancel()
         count += 1
-        if count >= 5:
+        if count >= Config.EDIT_SLEEP_TIMEOUT:
             count = 0
             await message.try_to_edit(tmp.format(p_obj.progress,
                                                  p_obj.percentage,
@@ -672,7 +651,7 @@ async def unpack_(message: Message) -> None:
         if message.process_is_canceled:
             p_obj.cancel()
         count += 1
-        if count >= 5:
+        if count >= Config.EDIT_SLEEP_TIMEOUT:
             count = 0
             await message.try_to_edit(tmp.format(p_obj.progress,
                                                  p_obj.percentage,

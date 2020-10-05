@@ -1,0 +1,12 @@
+version: "1"
+rules:
+  - base: alpha
+    upstream: ravana69:alpha
+    mergeMethod: rebase
+    mergeUnstable: false
+  - base: beta
+    upstream: ravana69:beta
+    mergeMethod: rebase
+  - base: master
+    upstream: ravana69:master
+    mergeMethod: rebase

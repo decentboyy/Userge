@@ -1,3 +1,5 @@
+# pylint: disable=missing-module-docstring
+#
 # Copyright (C) 2020 by UsergeTeam@Github, < https://github.com/UsergeTeam >.
 #
 # This file is part of < https://github.com/UsergeTeam/Userge > project,
@@ -8,22 +10,18 @@
 
 __all__ = ['get_collection']
 
-import re
 import asyncio
 from typing import List
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from motor.core import AgnosticClient, AgnosticDatabase, AgnosticCollection
 
-from userge import logging, Config
+from userge import logging, Config, logbot
 
 _LOG = logging.getLogger(__name__)
 _LOG_STR = "$$$>>> %s <<<$$$"
 
-_LOG.info(_LOG_STR, "Connecting to Database...")
-
-_UN_AND_PWD = Config.DB_URI.split('//')[1].split('@')[0]
-Config.DB_URI.replace(_UN_AND_PWD, re.escape(_UN_AND_PWD))
+logbot.edit_last_msg("Connecting to Database ...", _LOG.info, _LOG_STR)
 
 _MGCLIENT: AgnosticClient = AsyncIOMotorClient(Config.DB_URI)
 _RUN = asyncio.get_event_loop().run_until_complete
@@ -44,3 +42,6 @@ def get_collection(name: str) -> AgnosticCollection:
     else:
         _LOG.debug(_LOG_STR, f"{name} Collection Not Found :( => Creating New Collection...")
     return _DATABASE[name]
+
+
+logbot.del_last_msg()

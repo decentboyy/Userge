@@ -20,7 +20,7 @@
 
 # Userge 🔥
 
-[![Build Status](https://travis-ci.com/UsergeTeam/Userge.svg?branch=dev)](https://travis-ci.com/UsergeTeam/Userge) ![Python Version](https://img.shields.io/badge/python-3.7/3.8-lightgrey) ![Release](https://img.shields.io/github/v/release/UsergeTeam/Userge) ![Stars](https://img.shields.io/github/stars/UsergeTeam/Userge) ![Forks](https://img.shields.io/github/forks/UsergeTeam/Userge) ![Issues Open](https://img.shields.io/github/issues/UsergeTeam/Userge) ![Issues Closed](https://img.shields.io/github/issues-closed/UsergeTeam/Userge) ![PR Open](https://img.shields.io/github/issues-pr/UsergeTeam/Userge) ![PR Closed](https://img.shields.io/github/issues-pr-closed/UsergeTeam/Userge) ![Contributors](https://img.shields.io/github/contributors/UsergeTeam/Userge) ![Repo Size](https://img.shields.io/github/repo-size/UsergeTeam/Userge) ![License](https://img.shields.io/github/license/UsergeTeam/Userge) ![Commit Activity](https://img.shields.io/github/commit-activity/m/UsergeTeam/Userge) [![Plugins Repo!](https://img.shields.io/badge/Plugins%20Repo-!-orange)](https://github.com/UsergeTeam/Userge-Plugins) [![Join Channel!](https://img.shields.io/badge/Join%20Channel-!-red)](https://t.me/theUserge) [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/UsergeTeam/Userge/?ref=repository-badge)
+[![Build Status](https://travis-ci.com/UsergeTeam/Userge.svg?branch=dev)](https://travis-ci.com/UsergeTeam/Userge) ![Python Version](https://img.shields.io/badge/python-3.8-lightgrey) ![Release](https://img.shields.io/github/v/release/UsergeTeam/Userge) ![Stars](https://img.shields.io/github/stars/UsergeTeam/Userge) ![Forks](https://img.shields.io/github/forks/UsergeTeam/Userge) ![Issues Open](https://img.shields.io/github/issues/UsergeTeam/Userge) ![Issues Closed](https://img.shields.io/github/issues-closed/UsergeTeam/Userge) ![PR Open](https://img.shields.io/github/issues-pr/UsergeTeam/Userge) ![PR Closed](https://img.shields.io/github/issues-pr-closed/UsergeTeam/Userge) ![Contributors](https://img.shields.io/github/contributors/UsergeTeam/Userge) ![Repo Size](https://img.shields.io/github/repo-size/UsergeTeam/Userge) ![License](https://img.shields.io/github/license/UsergeTeam/Userge) ![Commit Activity](https://img.shields.io/github/commit-activity/m/UsergeTeam/Userge) [![Plugins Repo!](https://img.shields.io/badge/Plugins%20Repo-!-orange)](https://github.com/UsergeTeam/Userge-Plugins) [![Join Channel!](https://img.shields.io/badge/Join%20Channel-!-red)](https://t.me/theUserge) [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/UsergeTeam/Userge/?ref=repository-badge)
 
 > **Userge** is a Powerful , _Pluggable_ Telegram UserBot written in _Python_ using [Pyrogram](https://github.com/pyrogram/pyrogram).
 
@@ -57,44 +57,64 @@
 ## Example Plugin 🤨
 
 ```python
-from userge import userge, Message
+from userge import userge, Message, filters
 
 LOG = userge.getLogger(__name__)  # logger object
-
 CHANNEL = userge.getCLogger(__name__)  # channel logger object
 
-@userge.on_cmd("test", about="help text to this command")  # adding handler and help text to .test command
-async def testing(message: Message):
+# add command handler
+@userge.on_cmd("test", about="help text to this command")
+async def test_cmd(message: Message):
    LOG.info("starting test command...")  # log to console
-
+   # some other stuff
    await message.edit("testing...", del_in=5)  # this will be automatically deleted after 5 sec
-
+   # some other stuff
    await CHANNEL.log("testing completed!")  # log to channel
+
+# add filters handler
+@userge.on_filters(filters.me & filters.private)  # filter my private messages
+async def test_filter(message: Message):
+   LOG.info("starting filter command...")
+   # some other stuff
+   await message.reply(f"you typed - {message.text}", del_in=5)
+   # some other stuff
+   await CHANNEL.log("filter executed!")
 ```
 
 ## Requirements 🥴
 
-* Python 3.7 or Higher 👻
+* Python 3.8 or Higher 👻
 * Telegram [API Keys](https://my.telegram.org/apps)
 * Google Drive [API Keys](https://console.developers.google.com/)
 * MongoDB [Database URL](https://cloud.mongodb.com/)
 
+## UserGe MODES 🕹
+
+* **USER** mode `(using user account)`
+* **BOT** mode `(using bot account)`
+* **DUAL** mode `(using both user and bot account)`
+
+  > further **read** [config.env.sample](https://github.com/UsergeTeam/Userge/blob/alpha/config.env.sample)
+
 ## How To Deploy 👷
 
-* **[HEROKU](https://www.heroku.com/) Method** 🔧
+* **[HEROKU](https://www.heroku.com/) Method** 🚀
 
-  > First click the button below. 
+  > First click [**this**](https://heroku.com/deploy?template=https://github.com/UsergeTeam/Userge/tree/master)
 
-  > If you don't have HU_STRING_SESSION just ignore it.  
+  > Fill `API_ID`, `API_HASH`, `DATABASE_URL` and `LOG_CHANNEL_ID` (**required**)
 
-  > After Deployed to Heroku first turn off the app (resources -> turn off) and run `bash genStr` in console (more -> run console).  
+  > Choose your [**MODE**](https://github.com/UsergeTeam/Userge#userge-modes-)
 
-  > After that copy the string session and past it in Config Vars (settings -> reveal config vars). 
+  > Then fill other **non-required** vars as relevent to your **MODE**
 
-  > Finally turn on the app and check the logs (settings -> view logs) :)
+  > Finally **hit deploy** button
 
-  [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/UsergeTeam/Userge/tree/master)
+  > [**NOTE**] : your can fill other vars as your need and they are optional. (settings -> reveal config vars)
 
+* **Docker Method** 🐳 
+
+    - [**See Detailed Guide**](resources/radmeDocker.md)
 * **Other Method** 🔧
 
   ```bash
@@ -121,11 +141,9 @@ async def testing(message: Message):
 
 * **[More Detailed Guide](https://docs.google.com/document/d/15uoiOn2NkN518MMkx9h5UaMEWMp8aNZqJocXvS0uI6E)** 📝
 
-> TODO: add Docker Support.
-
 ### Video Tutorial 🎥
 
-  [![Tutorial](resources/tutorial.jpg)](https://youtu.be/-XJj686zeiY "Tutorial")
+  [![Tutorial](resources/tutorial.jpg)](https://youtu.be/M4T_BJvFqkc "Tutorial")
 
 ### Support & Discussions 👥
 

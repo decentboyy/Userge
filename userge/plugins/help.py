@@ -152,7 +152,7 @@ if userge.has_bot:
         await callback_query.edit_message_text(
             text, reply_markup=InlineKeyboardMarkup(buttons))
 
-        @userge.bot.on_callback_query(
+    @userge.bot.on_callback_query(
         filters=filters.regex(pattern=r"((?:un)?load|(?:en|dis)able)\((.+)\)"))
     @check_owner
     async def callback_manage(callback_query: CallbackQuery):

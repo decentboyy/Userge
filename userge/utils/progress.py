@@ -61,10 +61,10 @@ async def progress(current: int,
             ud_type,
             file_name,
             ''.join((userge.Config.FINISHED_PROGRESS_STR
-                     for i in range(floor(percentage / 0.1)))),
+                     for i in range(floor(percentage / 1)))),
             ''.join((userge.Config.UNFINISHED_PROGRESS_STR
-                     for i in range(1000 - floor(percentage / 0.1)))),
-            round(percentage, 0.1),
+                     for i in range(100 - floor(percentage / 1)))),
+            round(percentage, 1),
             humanbytes(current),
             humanbytes(total),
             humanbytes(speed),

@@ -88,9 +88,9 @@ async def ytDown(message: Message):
                 out += f"Progress >> {int(percentage)}%\n"
                 out += "[{}{}]".format(
                     ''.join((Config.FINISHED_PROGRESS_STR
-                             for _ in range(floor(percentage / 5)))),
+                             for _ in range(floor(percentage / 1)))),
                     ''.join((Config.UNFINISHED_PROGRESS_STR
-                             for _ in range(20 - floor(percentage / 5)))))
+                             for _ in range(100 - floor(percentage / 1)))))
             userge.loop.create_task(message.edit(out))
 
     await message.edit("Hold on \u23f3 ..")

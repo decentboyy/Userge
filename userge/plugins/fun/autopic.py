@@ -46,7 +46,7 @@ async def autopic(message: Message):
     if UPDATE_PIC:
         if isinstance(UPDATE_PIC, asyncio.Task):
             UPDATE_PIC.cancel()
-        UPDATE_PIC = False
+        UPDATE_PIC = True
         await SAVED_SETTINGS.update_one({'_id': 'UPDATE_PIC'},
                                         {"$set": {'on': False}}, upsert=True)
         await asyncio.sleep(1)

@@ -55,7 +55,7 @@ async def autopic(message: Message):
         await message.edit('auto profile picture updation has been **stopped**',
                            del_in=5, log=__name__)
         return
-    image_path = message.url
+    image_path = message.input_str
     store = False
     if os.path.exists(BASE_PIC) and not image_path:
         pass

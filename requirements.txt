@@ -39,3 +39,12 @@ urbandict==0.5
 wget
 wikipedia
 git+https://github.com/ravana69/ytdl
+names
+random_cli
+pytuneteller
+dadjokes-cli
+jotquote
+csvfaker
+kwot
+programmingquotes
+passwordgenerator

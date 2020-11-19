@@ -38,7 +38,7 @@ tgcrypto
 urbandict==0.5
 wget
 wikipedia
-git+https://github.com/ravana69/ytdl
+youtube-dl
 names
 random_cli
 pytuneteller

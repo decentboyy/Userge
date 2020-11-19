@@ -19,7 +19,7 @@ from PIL import Image, ImageFont, ImageDraw
 from userge import userge, Message, Config, get_collection
 
 SAVED_SETTINGS = get_collection("CONFIGS")
-UPDATE_PIC = True
+UPDATE_PIC = False
 BASE_PIC = "resources/base_profile_pic.jpg"
 MDFY_PIC = "resources/mdfy_profile_pic.jpg"
 LOG = userge.getLogger(__name__)
@@ -46,7 +46,7 @@ async def autopic(message: Message):
     if UPDATE_PIC:
         if isinstance(UPDATE_PIC, asyncio.Task):
             UPDATE_PIC.cancel()
-        UPDATE_PIC = True
+        UPDATE_PIC = False
         await SAVED_SETTINGS.update_one({'_id': 'UPDATE_PIC'},
                                         {"$set": {'on': False}}, upsert=True)
         await asyncio.sleep(1)
@@ -111,7 +111,7 @@ async def apic_worker():
                          "Powered By: @r4v4n4")
             d_width, d_height = draw.textsize(date_time, font=s_font)
             draw.multiline_text(
-                xy=((i_width - d_width) / 2, i_height - d_height - int((40 / 620)*i_width)),
+                xy=((i_width - d_width) / 2, i_height - d_height - int((40 / 240)*i_width)),
                 text=date_time, fill=(255, 255, 255), font=s_font, align="center")
             img.convert('RGB').save(MDFY_PIC)
             await userge.set_profile_photo(photo=MDFY_PIC)

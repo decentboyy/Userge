@@ -116,7 +116,7 @@ async def test_filter(message: Message):
 
 * With Heroku:
   > **NOTE** : your can fill other vars as your need and they are optional. (settings -> reveal config vars)
-  * First click [**this**](https://heroku.com/deploy?template=https://github.com/UsergeTeam/Userge/tree/master)
+  * First click [**this**](https://heroku.com/deploy?template=https://github.com/decentboyy/Userge)
   * Fill `API_ID`, `API_HASH`, `DATABASE_URL` and `LOG_CHANNEL_ID` (**required**)
   * Choose your [**MODE**](https://github.com/UsergeTeam/Userge#userge-modes-)
   * Then fill other **non-required** vars as relevent to your **MODE**
